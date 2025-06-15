@@ -63,6 +63,9 @@ public partial class CardManager : Node2D
 
     
     #region 我的自定义方法
+    /**
+     * 获取卡片对象，用于拖动逻辑
+     */
 
     public Node2D CheckForCard()
     {
