@@ -67,6 +67,23 @@ public partial class CardManager : Node2D
     #region 我的自定义方法
 
     /**
+     * 高亮卡牌
+     */
+
+    public void HighLightCard(Card card,bool isHoured)
+    {
+        if (isHoured)
+        {
+            card.Scale = new Vector2((float)1.2, (float)1.2);
+            card.ZIndex = 2;
+        }
+        else
+        {
+            card.Scale = new Vector2(1, 1);
+        }
+    }
+
+    /**
      * card : 需要连接信号的卡片
      * 连接卡片信号的方法
      */
@@ -84,17 +101,13 @@ public partial class CardManager : Node2D
     private void OnHoverOverCard(Card card)
     {
         GD.Print("Manager 中的OnHoverOverCard");
+        HighLightCard(card,true);
     }
     
     private void OnHoverOffCard(Card card)
     {
         GD.Print("Manager 中的OnHoverOffCard");
-    }
-
-
-    private void OnHoverOverCard()
-    {
-        
+        HighLightCard(card,false);
     }
     
     /**
