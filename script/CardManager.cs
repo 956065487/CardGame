@@ -12,6 +12,8 @@ public partial class CardManager : Node2D
     public Node2D CardBeingDragged;
     public Vector2 ScreenSize;
     private Card _card;
+    private bool _isHovering;
+    private Card _oldCard;
 
     #endregion
     
@@ -98,14 +100,39 @@ public partial class CardManager : Node2D
         card.HoverOff += OnHoverOffCard;
     }
 
+    /**
+     * 当鼠标悬停在卡上时
+     */
     private void OnHoverOverCard(Card card)
     {
+        if (_isHovering)
+        {
+            HighLightCard(_oldCard, false);
+        }
+        else
+        {
+            _isHovering = true;
+        }
+        _oldCard = card; // 存入当前悬停的卡
         GD.Print("Manager 中的OnHoverOverCard");
         HighLightCard(card,true);
     }
     
+    /**
+     * 当鼠标离开卡片时
+     */
     private void OnHoverOffCard(Card card)
     {
+        Card checkForCard = (Card)CheckForCard();
+        if (_isHovering && checkForCard == null)
+        {
+            _isHovering = false;
+        }
+        else if (checkForCard != null)
+        {
+            HighLightCard(checkForCard,true);
+            _oldCard = checkForCard;
+        }
         GD.Print("Manager 中的OnHoverOffCard");
         HighLightCard(card,false);
     }
