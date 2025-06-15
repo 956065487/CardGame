@@ -11,6 +11,7 @@ public partial class CardManager : Node2D
     
     public Node2D CardBeingDragged;
     public Vector2 ScreenSize;
+    private Card _card;
 
     #endregion
     
@@ -22,6 +23,7 @@ public partial class CardManager : Node2D
     public override void _Ready()
     {
         ScreenSize = GetViewportRect().Size;
+        
         
     }
 
@@ -63,6 +65,38 @@ public partial class CardManager : Node2D
 
     
     #region 我的自定义方法
+
+    /**
+     * card : 需要连接信号的卡片
+     * 连接卡片信号的方法
+     */
+    public void ConnectCardSignals(Card card)
+    {
+        if (card == null)
+        {
+            GD.PrintErr("错误：没能获取到Card信息");
+            return;
+        }
+        card.Hover += OnHoverOverCard;
+        card.HoverOff += OnHoverOffCard;
+    }
+
+    private void OnHoverOverCard(Card card)
+    {
+        GD.Print("Manager 中的OnHoverOverCard");
+    }
+    
+    private void OnHoverOffCard(Card card)
+    {
+        GD.Print("Manager 中的OnHoverOffCard");
+    }
+
+
+    private void OnHoverOverCard()
+    {
+        
+    }
+    
     /**
      * 获取卡片对象，用于拖动逻辑
      */
