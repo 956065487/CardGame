@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using Godot;
 using Godot.Collections;
 
@@ -6,8 +7,10 @@ namespace CardGame.script;
 public partial class CardManager : Node2D
 {
     #region 属性值
-
-    public Node2D cardBeingDragged;
+    public const int  CollisionMaskCard = 1;
+    
+    public Node2D CardBeingDragged;
+    public Vector2 ScreenSize;
 
     #endregion
     
@@ -18,6 +21,8 @@ public partial class CardManager : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        ScreenSize = GetViewportRect().Size;
+        
     }
 
     public override void _Input(InputEvent @event)
@@ -30,10 +35,13 @@ public partial class CardManager : Node2D
                 Node2D card = CheckForCard();
                 if (card != null)
                 {
-                    cardBeingDragged = card;
+                    CardBeingDragged = card;
                 }
                 
-
+            }
+            else
+            {
+                CardBeingDragged = null;
             }
         }
     }
@@ -42,15 +50,18 @@ public partial class CardManager : Node2D
     public override void _Process(double delta)
     {
         var mousePos = GetGlobalMousePosition();
-        if (cardBeingDragged != null)
+        if (CardBeingDragged != null)
         {
-            cardBeingDragged.Position = mousePos; 
+            CardBeingDragged.Position = new Vector2(Mathf.Clamp(mousePos.X, 0, ScreenSize.X), Mathf.Clamp(mousePos.Y,
+                0, ScreenSize.Y));
         }
         
     }
 
     #endregion
 
+
+    
     #region 我的自定义方法
 
     public Node2D CheckForCard()
@@ -60,14 +71,17 @@ public partial class CardManager : Node2D
         var parameters2D = new PhysicsPointQueryParameters2D();
         parameters2D.Position = GetGlobalMousePosition();
         parameters2D.CollideWithAreas = true;
-        parameters2D.CollisionMask = 1;
+        parameters2D.CollisionMask = CollisionMaskCard;
         Array<Dictionary> result = spaceState2D.IntersectPoint(parameters2D);
-        Node2D colliderNode2D = result[0]["collider"].As<Node2D>();
-        Node2D card = colliderNode2D.GetParent<Node2D>();
-        
-        if (card != null)
+        if (result.Count > 0)
         {
-            return card;
+            Node2D colliderNode2D = result[0]["collider"].As<Node2D>();
+            Node2D card = colliderNode2D.GetParent<Node2D>();
+        
+            if (card != null)
+            {
+                return card;
+            }
         }
         return null;
     }
