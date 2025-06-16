@@ -74,11 +74,16 @@ public partial class CardManager : Node2D
 
     public void HighLightCard(Card card,bool isHoured)
     {
+        if (CardBeingDragged != null)
+        {
+            return;
+        }
         if (isHoured)
         {
             card.Scale = new Vector2((float)1.2, (float)1.2);
             card.ZIndex = 2;
-        }
+            card.MoveToFront();
+        } 
         else
         {
             card.Scale = new Vector2(1, 1);
