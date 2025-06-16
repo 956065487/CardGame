@@ -1,3 +1,4 @@
+using System;
 using System.Reflection.Metadata.Ecma335;
 using Godot;
 using Godot.Collections;
@@ -128,7 +129,20 @@ public partial class CardManager : Node2D
      */
     private void OnHoverOffCard(Card card)
     {
-        Card checkForCard = (Card)CheckForCard();
+        // TODO 
+        // 卡槽也可以视为卡片进行拖动，导致这里有时候会显示null？修卡槽bug？？？？
+        Card checkForCard;
+        try
+        {
+            checkForCard = (Card)CheckForCard();
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr("获取卡片失败！");
+            GD.PrintErr(e.Message);
+            throw;
+        }
+        
         if (_isHovering && checkForCard == null)
         {
             _isHovering = false;

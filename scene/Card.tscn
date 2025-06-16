@@ -13,8 +13,10 @@ script = ExtResource("1_fjayt")
 position = Vector2(1, 3)
 scale = Vector2(2.875, 3.01923)
 texture = ExtResource("1_bv7e0")
+metadata/_edit_group_ = true
 
 [node name="Area2D" type="Area2D" parent="."]
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 position = Vector2(0, 2)
