@@ -40,7 +40,7 @@ public partial class Card : Node2D
         catch (Exception e)
         {
             GD.PrintErr("Card实例名 = " + GetName());
-            GD.PrintErr("Card 错误信息:" + e.Message);
+            GD.PrintErr("Card错误信息:" + e.Message);
             throw;
         }
         
