@@ -41,7 +41,7 @@ public partial class Card : Node2D
         {
             GD.PrintErr("Card实例名 = " + GetName());
             GD.PrintErr("Card错误信息:" + e.Message);
-            throw;
+            // throw;
         }
         
     }
