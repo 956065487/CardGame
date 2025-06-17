@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cyno5k26k5kat"]
 
-[ext_resource type="Texture2D" uid="uid://cvo87nhqp6pgv" path="res://asset/knight/Knight111.png" id="1_bv7e0"]
+[ext_resource type="Texture2D" uid="uid://cvo87nhqp6pgv" path="res://asset/knight/Knight.png" id="1_bv7e0"]
 [ext_resource type="Script" uid="uid://csb72fkjohh5d" path="res://script/Card.cs" id="1_fjayt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bqp8r"]

@@ -158,9 +158,10 @@ public partial class CardManager : Node2D
     
     /**
      * 获取卡片对象，用于拖动逻辑
+     * 如果不为 Card 对象，返回Null
      */
 
-    public Node2D CheckForCard()
+    public Card CheckForCard()
     {
         // 获取被点击的Area2d的父级
         PhysicsDirectSpaceState2D spaceState2D = GetWorld2D().DirectSpaceState;
@@ -172,7 +173,12 @@ public partial class CardManager : Node2D
         if (result.Count > 0)
         {
             Node2D colliderNode2D = result[0]["collider"].As<Node2D>();
-            Node2D card = colliderNode2D.GetParent<Node2D>();
+            if (colliderNode2D.GetParent().GetType() != typeof(Card))
+            {
+                GD.PrintErr("CheckForCard ERROR:错误的类型，目标不为Card对象");
+                return null;
+            }
+            Card card = colliderNode2D.GetParent<Card>();
         
             if (card != null)
             {

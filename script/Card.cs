@@ -1,7 +1,9 @@
+using System;
 using Godot;
 
 namespace CardGame.script;
 
+[GlobalClass,Icon("res://asset/knight/Knight.png")]
 public partial class Card : Node2D
 {
     #region 信号、属性
@@ -24,9 +26,24 @@ public partial class Card : Node2D
         area2D.MouseEntered += OnMouseEnter;
         area2D.MouseExited += OnMouseExit;
 
+        /*if (GetParent().GetType() != typeof(CardManager))
+        {
+            GD.PrintErr("Card ERROR:获取不到父对象CardManager");
+            return;
+        }*/
         // 用于每当卡片在父节点CardManager实例化时，直接连接信号，无需一个个手动连接
-        CardManager cardManager = (CardManager)GetParent();
-        cardManager.ConnectCardSignals(this);
+        try
+        {
+            CardManager cardManager = (CardManager)GetParent();
+            cardManager.ConnectCardSignals(this);
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr("Card实例名 = " + GetName());
+            GD.PrintErr("Card 错误信息:" + e.Message);
+            throw;
+        }
+        
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
