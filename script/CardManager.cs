@@ -8,13 +8,14 @@ namespace CardGame.script;
 public partial class CardManager : Node2D
 {
     #region 常量
-    public const int  CollisionMaskCard = 1;
-    public const int  CollisionMaskCardSlot = 2;
-    
+
+    public const int CollisionMaskCard = 1;
+    public const int CollisionMaskCardSlot = 2;
+
     #endregion
-    
+
     #region 属性值
-    
+
     public Node2D CardBeingDragged;
     public Vector2 ScreenSize;
     private Card _card;
@@ -22,17 +23,13 @@ public partial class CardManager : Node2D
     private Card _oldCard;
 
     #endregion
-    
+
     #region 生命周期中的方法
 
-    
-    
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         ScreenSize = GetViewportRect().Size;
-        
-        
     }
 
     public override void _Input(InputEvent @event)
@@ -47,11 +44,10 @@ public partial class CardManager : Node2D
                 {
                     CardBeingDragged = card;
                 }
-                
             }
             else
             {
-                CardBeingDragged = null;
+                FinishedDragged();
             }
         }
     }
@@ -65,31 +61,29 @@ public partial class CardManager : Node2D
             CardBeingDragged.Position = new Vector2(Mathf.Clamp(mousePos.X, 0, ScreenSize.X), Mathf.Clamp(mousePos.Y,
                 0, ScreenSize.Y));
         }
-        
     }
 
     #endregion
 
 
-    
     #region 我的自定义方法
 
     /**
      * 高亮卡牌
      */
-
-    public void HighLightCard(Card card,bool isHoured)
+    public void HighLightCard(Card card, bool isHoured)
     {
         if (CardBeingDragged != null)
         {
             return;
         }
+
         if (isHoured)
         {
             card.Scale = new Vector2((float)1.2, (float)1.2);
             card.ZIndex = 2;
             card.MoveToFront();
-        } 
+        }
         else
         {
             card.Scale = new Vector2(1, 1);
@@ -107,6 +101,7 @@ public partial class CardManager : Node2D
             GD.PrintErr("错误：没能获取到Card信息");
             return;
         }
+
         card.Hover += OnHoverOverCard;
         card.HoverOff += OnHoverOffCard;
     }
@@ -124,11 +119,12 @@ public partial class CardManager : Node2D
         {
             _isHovering = true;
         }
+
         _oldCard = card; // 存入当前悬停的卡
         GD.Print("Manager 中的OnHoverOverCard");
-        HighLightCard(card,true);
+        HighLightCard(card, true);
     }
-    
+
     /**
      * 当鼠标离开卡片时
      */
@@ -136,25 +132,41 @@ public partial class CardManager : Node2D
     {
         // 尝试获取卡片
         Card checkForCard = CheckForCard();
-        
+
         if (_isHovering && checkForCard == null)
         {
             _isHovering = false;
         }
         else if (checkForCard != null)
         {
-            HighLightCard(checkForCard,true);
-            _oldCard = checkForCard;    //储存旧卡牌
+            HighLightCard(checkForCard, true);
+            _oldCard = checkForCard; //储存旧卡牌
         }
+
         GD.Print("Manager 中的OnHoverOffCard");
-        HighLightCard(card,false);
+        HighLightCard(card, false);
     }
-    
+
+    /**
+     * 鼠标放开，不再拖拽时
+     */
+    private void FinishedDragged()
+    {
+        CardSlot cardSlot = CheckForCardSlot();
+        if (cardSlot != null && !cardSlot.CardInSlot)
+        {
+            // 说明在空卡槽上面
+            CardBeingDragged.Position = cardSlot.Position;
+            CardBeingDragged.GetNode<CollisionShape2D>("Area2D/CollisionShape2D").Disabled = true;
+            cardSlot.CardInSlot = true;
+        }
+        CardBeingDragged = null;
+    }
+
     /**
      * 获取卡片对象，用于拖动逻辑
      * 如果不为 Card 对象，返回Null
      */
-
     public Card CheckForCard()
     {
         // 获取被点击的Area2d的父级
@@ -172,16 +184,18 @@ public partial class CardManager : Node2D
                 GD.PrintErr("CheckForCard ERROR:错误的类型，目标不为Card对象");
                 return null;
             }
+
             Card card = colliderNode2D.GetParent<Card>();
-        
+
             if (card != null)
             {
                 return card;
             }
         }
+
         return null;
     }
-    
+
     public CardSlot CheckForCardSlot()
     {
         // 获取被点击的Area2d的父级
@@ -199,13 +213,15 @@ public partial class CardManager : Node2D
                 GD.PrintErr("CheckForSlot ERROR:错误的类型，目标不为CardSlot对象");
                 return null;
             }
+
             CardSlot cardSlot = colliderNode2D.GetParent<CardSlot>();
-        
+
             if (cardSlot != null)
             {
                 return cardSlot;
             }
         }
+
         return null;
     }
 
