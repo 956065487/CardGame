@@ -7,8 +7,13 @@ namespace CardGame.script;
 
 public partial class CardManager : Node2D
 {
-    #region 属性值
+    #region 常量
     public const int  CollisionMaskCard = 1;
+    public const int  CollisionMaskCardSlot = 2;
+    
+    #endregion
+    
+    #region 属性值
     
     public Node2D CardBeingDragged;
     public Vector2 ScreenSize;
@@ -129,19 +134,8 @@ public partial class CardManager : Node2D
      */
     private void OnHoverOffCard(Card card)
     {
-        // TODO 
-        // 卡槽也可以视为卡片进行拖动，导致这里有时候会显示null？修卡槽bug？？？？
-        Card checkForCard;
-        try
-        {
-            checkForCard = (Card)CheckForCard();
-        }
-        catch (Exception e)
-        {
-            GD.PrintErr("获取卡片失败！");
-            GD.PrintErr(e.Message);
-            throw;
-        }
+        // 尝试获取卡片
+        Card checkForCard = CheckForCard();
         
         if (_isHovering && checkForCard == null)
         {
@@ -150,7 +144,7 @@ public partial class CardManager : Node2D
         else if (checkForCard != null)
         {
             HighLightCard(checkForCard,true);
-            _oldCard = checkForCard;
+            _oldCard = checkForCard;    //储存旧卡牌
         }
         GD.Print("Manager 中的OnHoverOffCard");
         HighLightCard(card,false);
@@ -183,6 +177,33 @@ public partial class CardManager : Node2D
             if (card != null)
             {
                 return card;
+            }
+        }
+        return null;
+    }
+    
+    public CardSlot CheckForCardSlot()
+    {
+        // 获取被点击的Area2d的父级
+        PhysicsDirectSpaceState2D spaceState2D = GetWorld2D().DirectSpaceState;
+        var parameters2D = new PhysicsPointQueryParameters2D();
+        parameters2D.Position = GetGlobalMousePosition();
+        parameters2D.CollideWithAreas = true;
+        parameters2D.CollisionMask = CollisionMaskCardSlot;
+        Array<Dictionary> result = spaceState2D.IntersectPoint(parameters2D);
+        if (result.Count > 0)
+        {
+            Node2D colliderNode2D = result[0]["collider"].As<Node2D>();
+            if (colliderNode2D.GetParent().GetType() != typeof(CardSlot))
+            {
+                GD.PrintErr("CheckForSlot ERROR:错误的类型，目标不为CardSlot对象");
+                return null;
+            }
+            CardSlot cardSlot = colliderNode2D.GetParent<CardSlot>();
+        
+            if (cardSlot != null)
+            {
+                return cardSlot;
             }
         }
         return null;
