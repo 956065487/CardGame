@@ -9,8 +9,8 @@ public partial class CardManager : Node2D
 {
     #region 常量
 
-    public const int CollisionMaskCard = 1;
-    public const int CollisionMaskCardSlot = 2;
+    public const int COLLISION_MASK_CARD = 1;
+    public const int COLLISION_MASK_CARD_SLOT = 2;
 
     #endregion
 
@@ -174,7 +174,7 @@ public partial class CardManager : Node2D
         var parameters2D = new PhysicsPointQueryParameters2D();
         parameters2D.Position = GetGlobalMousePosition();
         parameters2D.CollideWithAreas = true;
-        parameters2D.CollisionMask = CollisionMaskCard;
+        parameters2D.CollisionMask = COLLISION_MASK_CARD;
         Array<Dictionary> result = spaceState2D.IntersectPoint(parameters2D);
         if (result.Count > 0)
         {
@@ -203,7 +203,7 @@ public partial class CardManager : Node2D
         var parameters2D = new PhysicsPointQueryParameters2D();
         parameters2D.Position = GetGlobalMousePosition();
         parameters2D.CollideWithAreas = true;
-        parameters2D.CollisionMask = CollisionMaskCardSlot;
+        parameters2D.CollisionMask = COLLISION_MASK_CARD_SLOT;
         Array<Dictionary> result = spaceState2D.IntersectPoint(parameters2D);
         if (result.Count > 0)
         {
