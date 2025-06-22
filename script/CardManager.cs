@@ -22,6 +22,8 @@ public partial class CardManager : Node2D
     private bool _isHovering;
     private Card _oldCard;
 
+    private PlayerHand playerHandNode2d = new PlayerHand();
+    
     #endregion
 
     #region 生命周期中的方法
@@ -30,6 +32,7 @@ public partial class CardManager : Node2D
     public override void _Ready()
     {
         ScreenSize = GetViewportRect().Size;
+        playerHandNode2d = GetNode<PlayerHand>("/root/Main/PlayerHand");
     }
 
     public override void _Input(InputEvent @event)
@@ -159,6 +162,11 @@ public partial class CardManager : Node2D
             CardBeingDragged.Position = cardSlot.Position;
             CardBeingDragged.GetNode<CollisionShape2D>("Area2D/CollisionShape2D").Disabled = true;
             cardSlot.CardInSlot = true;
+            playerHandNode2d.RemoveCardFromHand(CardBeingDragged as Card);
+        }
+        else
+        {
+            playerHandNode2d.AddToHand(CardBeingDragged as Card);
         }
         CardBeingDragged = null;
     }

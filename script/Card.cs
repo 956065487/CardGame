@@ -13,6 +13,8 @@ public partial class Card : Node2D
 
     [Signal]
     public delegate void HoverOffEventHandler(Card card);
+
+    public Vector2 PositionInHand {set; get;}
     
     #endregion
 
