@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://blgcvsw5expnj"]
+[gd_scene load_steps=6 format=3 uid="uid://blgcvsw5expnj"]
 
 [ext_resource type="Script" uid="uid://ej2mrtdh58b3" path="res://script/CardManager.cs" id="1_h6nst"]
 [ext_resource type="PackedScene" uid="uid://cm77vy8e2lbtb" path="res://scene/CardSlot.tscn" id="3_hr7lf"]
 [ext_resource type="Script" uid="uid://bw634sy8kjy4v" path="res://script/PlayerHand.cs" id="3_yiwpq"]
+[ext_resource type="PackedScene" uid="uid://crt0nmbvft01a" path="res://scene/Deck.tscn" id="4_mnmej"]
+[ext_resource type="Script" uid="uid://dmfx01hd2qnyv" path="res://script/Deck.cs" id="5_o6q0f"]
 
 [node name="Main" type="Node2D"]
 
@@ -20,3 +22,7 @@ position = Vector2(549, 383)
 
 [node name="PlayerHand" type="Node2D" parent="."]
 script = ExtResource("3_yiwpq")
+
+[node name="Deck" parent="." instance=ExtResource("4_mnmej")]
+position = Vector2(150, 880)
+script = ExtResource("5_o6q0f")

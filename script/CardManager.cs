@@ -35,7 +35,10 @@ public partial class CardManager : Node2D
         playerHandNode2d = GetNode<PlayerHand>("/root/Main/PlayerHand");
     }
 
-    public override void _Input(InputEvent @event)
+    // TODO 解耦，将输入功能集成到专门的manager中管理
+    /*
+     // 此处将重新在InputManager中集成
+     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventMouseButton mouseEvent && mouseEvent.ButtonIndex == MouseButton.Left)
         {
@@ -53,7 +56,7 @@ public partial class CardManager : Node2D
                 FinishedDragged();
             }
         }
-    }
+    }*/
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
