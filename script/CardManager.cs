@@ -16,11 +16,12 @@ public partial class CardManager : Node2D
 
     #region 属性值
 
-    public Node2D CardBeingDragged;
+    public Card CardBeingDragged;
     public Vector2 ScreenSize;
     private Card _card;
     private bool _isHovering;
     private Card _oldCard;
+    private InputManager _inputManager;
 
     private PlayerHand playerHandNode2d = new PlayerHand();
     
@@ -33,6 +34,9 @@ public partial class CardManager : Node2D
     {
         ScreenSize = GetViewportRect().Size;
         playerHandNode2d = GetNode<PlayerHand>("/root/Main/PlayerHand");
+        _inputManager = GetNode<InputManager>("/root/Main/InputManager");
+        _inputManager.LeftMouseClicked += OnLeftMouseClicked;
+        _inputManager.LeftMouseReleased += OnLeftMouseReleased;
     }
 
     // TODO 解耦，将输入功能集成到专门的manager中管理
@@ -136,17 +140,15 @@ public partial class CardManager : Node2D
      */
     private void OnHoverOffCard(Card card)
     {
-        // 尝试获取卡片
-        Card checkForCard = CheckForCard();
-
-        if (_isHovering && checkForCard == null)
+ 
+        if (_isHovering && CardBeingDragged == null)
         {
             _isHovering = false;
         }
-        else if (checkForCard != null)
+        else if (CardBeingDragged != null)
         {
-            HighLightCard(checkForCard, true);
-            _oldCard = checkForCard; //储存旧卡牌
+            HighLightCard(CardBeingDragged, true);
+            _oldCard = CardBeingDragged; //储存旧卡牌
         }
 
         GD.Print("Manager 中的OnHoverOffCard");
@@ -178,7 +180,7 @@ public partial class CardManager : Node2D
      * 获取卡片对象，用于拖动逻辑
      * 如果不为 Card 对象，返回Null
      */
-    public Card CheckForCard()
+    /*public Card CheckForCard()
     {
         // 获取被点击的Area2d的父级
         PhysicsDirectSpaceState2D spaceState2D = GetWorld2D().DirectSpaceState;
@@ -205,7 +207,7 @@ public partial class CardManager : Node2D
         }
 
         return null;
-    }
+    }*/
 
     public CardSlot CheckForCardSlot()
     {
@@ -236,5 +238,21 @@ public partial class CardManager : Node2D
         return null;
     }
 
+    /**
+     * 当鼠标点击时
+     */
+    public void OnLeftMouseClicked()
+    {
+        GD.Print("OnLeftMouseClicked");
+    }
+
+    /**
+     * 当鼠标放开时
+     */
+    public void OnLeftMouseReleased()
+    {
+        GD.Print("OnLeftMouseReleased");
+    }
+    
     #endregion
 }
