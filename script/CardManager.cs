@@ -23,7 +23,7 @@ public partial class CardManager : Node2D
     private Card _oldCard;
     private InputManager _inputManager;
 
-    private PlayerHand playerHandNode2d = new PlayerHand();
+    public PlayerHand PlayerHandNode2d = new PlayerHand();
     
     #endregion
 
@@ -33,34 +33,11 @@ public partial class CardManager : Node2D
     public override void _Ready()
     {
         ScreenSize = GetViewportRect().Size;
-        playerHandNode2d = GetNode<PlayerHand>("/root/Main/PlayerHand");
+        PlayerHandNode2d = GetNode<PlayerHand>("/root/Main/PlayerHand");
         _inputManager = GetNode<InputManager>("/root/Main/InputManager");
         _inputManager.LeftMouseClicked += OnLeftMouseClicked;
         _inputManager.LeftMouseReleased += OnLeftMouseReleased;
     }
-
-    // TODO 解耦，将输入功能集成到专门的manager中管理
-    /*
-     // 此处将重新在InputManager中集成
-     public override void _Input(InputEvent @event)
-    {
-        if (@event is InputEventMouseButton mouseEvent && mouseEvent.ButtonIndex == MouseButton.Left)
-        {
-            if (mouseEvent.Pressed)
-            {
-                GD.Print("Mouse Left Clicked!");
-                Node2D card = CheckForCard();
-                if (card != null)
-                {
-                    CardBeingDragged = card;
-                }
-            }
-            else
-            {
-                FinishedDragged();
-            }
-        }
-    }*/
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
@@ -154,60 +131,7 @@ public partial class CardManager : Node2D
         GD.Print("Manager 中的OnHoverOffCard");
         HighLightCard(card, false);
     }
-
-    /**
-     * 鼠标放开，不再拖拽时
-     */
-    private void FinishedDragged()
-    {
-        CardSlot cardSlot = CheckForCardSlot();
-        if (cardSlot != null && !cardSlot.CardInSlot)
-        {
-            // 说明在空卡槽上面
-            CardBeingDragged.Position = cardSlot.Position;
-            CardBeingDragged.GetNode<CollisionShape2D>("Area2D/CollisionShape2D").Disabled = true;
-            cardSlot.CardInSlot = true;
-            playerHandNode2d.RemoveCardFromHand(CardBeingDragged as Card);
-        }
-        else
-        {
-            playerHandNode2d.AddToHand(CardBeingDragged as Card);
-        }
-        CardBeingDragged = null;
-    }
-
-    /**
-     * 获取卡片对象，用于拖动逻辑
-     * 如果不为 Card 对象，返回Null
-     */
-    /*public Card CheckForCard()
-    {
-        // 获取被点击的Area2d的父级
-        PhysicsDirectSpaceState2D spaceState2D = GetWorld2D().DirectSpaceState;
-        var parameters2D = new PhysicsPointQueryParameters2D();
-        parameters2D.Position = GetGlobalMousePosition();
-        parameters2D.CollideWithAreas = true;
-        parameters2D.CollisionMask = COLLISION_MASK_CARD;
-        Array<Dictionary> result = spaceState2D.IntersectPoint(parameters2D);
-        if (result.Count > 0)
-        {
-            Node2D colliderNode2D = result[0]["collider"].As<Node2D>();
-            if (colliderNode2D.GetParent().GetType() != typeof(Card))
-            {
-                GD.PrintErr("CheckForCard ERROR:错误的类型，目标不为Card对象");
-                return null;
-            }
-
-            Card card = colliderNode2D.GetParent<Card>();
-
-            if (card != null)
-            {
-                return card;
-            }
-        }
-
-        return null;
-    }*/
+    
 
     public CardSlot CheckForCardSlot()
     {
