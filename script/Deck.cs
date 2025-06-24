@@ -12,6 +12,8 @@ public partial class Deck : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		Area2D area2D = GetNode<Area2D>("Area2D");
+		area2D.CollisionMask = InputManager.COLLISION_MASK_DECK;
 	}
 
 	public void DrawCard()

@@ -9,13 +9,14 @@ public partial class InputManager : Node2D
 
     public const int COLLISION_MASK_CARD = 1;
     public const int COLLISION_MASK_DECK = 2;
-    
+    public const int COLLISION_MASK_CARD_SLOT = 3;
+
     public CardManager CardManager;
     public Deck Deck;
-    
+
     [Signal]
     public delegate void LeftMouseClickedEventHandler();
-    
+
     [Signal]
     public delegate void LeftMouseReleasedEventHandler();
 
@@ -42,7 +43,6 @@ public partial class InputManager : Node2D
                 {
                     CardManager.CardBeingDragged = (Card)checkForCursor;
                 }
-                
             }
             else
             {
@@ -74,12 +74,13 @@ public partial class InputManager : Node2D
             Node2D colliderNode2D = result[0]["collider"].As<Node2D>();
             if (colliderNode2D == null)
             {
-                Utils.PrintErr(this,"colliderNode2D is null");
+                Utils.PrintErr(this, "colliderNode2D is null");
             }
+
             CollisionObject2D colliderObject = colliderNode2D as CollisionObject2D;
             if (colliderObject == null)
             {
-                Utils.PrintErr(this,"colliderNode2D is not a CollisionObject2D");
+                Utils.PrintErr(this, "colliderNode2D is not a CollisionObject2D");
             }
 
             var resultCollisionMask = colliderObject.CollisionMask;
@@ -90,19 +91,29 @@ public partial class InputManager : Node2D
                 {
                     return colliderObject.GetParent() as Card;
                 }
-
-            } else if (resultCollisionMask == COLLISION_MASK_DECK)
+            }
+            else if (resultCollisionMask == COLLISION_MASK_DECK)
             {
+                // TODO 牌组被点击后的事件未实现
                 // 牌组 被 点击
+                GD.Print("这里是牌组");
+                Utils.PrintErr(this,"牌组逻辑尚未实现");
+            }
+            else if (resultCollisionMask == COLLISION_MASK_CARD_SLOT)
+            {
+                // 卡槽 被 点击
                 if (colliderObject.GetParent() is CardSlot)
                 {
+                    GD.Print("这里是卡槽");
                     return colliderObject.GetParent() as CardSlot;
                 }
-            } 
+                
+            }
         }
+
         return null;
     }
-    
+
     /**
      * 鼠标放开，不再拖拽时
      */
@@ -114,7 +125,7 @@ public partial class InputManager : Node2D
         {
             cardSlot = checkForCursor as CardSlot;
         }
-        
+
         if (cardSlot != null && !cardSlot.CardInSlot && CardManager.CardBeingDragged != null)
         {
             // 说明在空卡槽上面
@@ -127,6 +138,7 @@ public partial class InputManager : Node2D
         {
             CardManager.PlayerHandNode2d.AddToHand(CardManager.CardBeingDragged);
         }
+
         CardManager.CardBeingDragged = null;
     }
 

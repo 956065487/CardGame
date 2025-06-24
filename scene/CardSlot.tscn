@@ -7,6 +7,8 @@
 size = Vector2(144, 143)
 
 [node name="CardSlot" type="Node2D"]
+light_mask = 4
+visibility_layer = 4
 script = ExtResource("1_4nekl")
 
 [node name="CardSlotImg" type="Sprite2D" parent="."]
