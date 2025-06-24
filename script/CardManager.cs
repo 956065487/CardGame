@@ -131,36 +131,6 @@ public partial class CardManager : Node2D
         GD.Print("Manager 中的OnHoverOffCard");
         HighLightCard(card, false);
     }
-    
-
-    public CardSlot CheckForCardSlot()
-    {
-        // 获取被点击的Area2d的父级
-        PhysicsDirectSpaceState2D spaceState2D = GetWorld2D().DirectSpaceState;
-        var parameters2D = new PhysicsPointQueryParameters2D();
-        parameters2D.Position = GetGlobalMousePosition();
-        parameters2D.CollideWithAreas = true;
-        parameters2D.CollisionMask = COLLISION_MASK_CARD_SLOT;
-        Array<Dictionary> result = spaceState2D.IntersectPoint(parameters2D);
-        if (result.Count > 0)
-        {
-            Node2D colliderNode2D = result[0]["collider"].As<Node2D>();
-            if (colliderNode2D.GetParent().GetType() != typeof(CardSlot))
-            {
-                GD.PrintErr("CheckForSlot ERROR:错误的类型，目标不为CardSlot对象");
-                return null;
-            }
-
-            CardSlot cardSlot = colliderNode2D.GetParent<CardSlot>();
-
-            if (cardSlot != null)
-            {
-                return cardSlot;
-            }
-        }
-
-        return null;
-    }
 
     /**
      * 当鼠标点击时

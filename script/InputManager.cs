@@ -88,7 +88,7 @@ public partial class InputManager : Node2D
                 // Card对象 被 点击
                 if (colliderObject.GetParent().GetType() == typeof(Card))
                 {
-                    return colliderNode2D.GetParent() as Card;
+                    return colliderObject.GetParent() as Card;
                 }
 
             } else if (resultCollisionMask == COLLISION_MASK_DECK)
