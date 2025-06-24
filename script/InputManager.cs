@@ -115,7 +115,7 @@ public partial class InputManager : Node2D
             cardSlot = checkForCursor as CardSlot;
         }
         
-        if (cardSlot != null && !cardSlot.CardInSlot)
+        if (cardSlot != null && !cardSlot.CardInSlot && CardManager.CardBeingDragged != null)
         {
             // 说明在空卡槽上面
             CardManager.CardBeingDragged.Position = cardSlot.Position;
