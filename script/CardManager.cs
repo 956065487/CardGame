@@ -7,12 +7,6 @@ namespace CardGame.script;
 
 public partial class CardManager : Node2D
 {
-    #region 常量
-
-    public const int COLLISION_MASK_CARD = 1;
-    public const int COLLISION_MASK_CARD_SLOT = 2;
-
-    #endregion
 
     #region 属性值
 
@@ -33,10 +27,11 @@ public partial class CardManager : Node2D
     public override void _Ready()
     {
         ScreenSize = GetViewportRect().Size;
-        PlayerHandNode2d = GetNode<PlayerHand>("/root/Main/PlayerHand");
         _inputManager = GetNode<InputManager>("/root/Main/InputManager");
         _inputManager.LeftMouseClicked += OnLeftMouseClicked;
         _inputManager.LeftMouseReleased += OnLeftMouseReleased;
+        PlayerHandNode2d = GetNode<PlayerHand>("/root/Main/PlayerHand");
+        
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -137,7 +132,7 @@ public partial class CardManager : Node2D
      */
     public void OnLeftMouseClicked()
     {
-        GD.Print("OnLeftMouseClicked");
+        // GD.Print("OnLeftMouseClicked");
     }
 
     /**
@@ -145,7 +140,7 @@ public partial class CardManager : Node2D
      */
     public void OnLeftMouseReleased()
     {
-        GD.Print("OnLeftMouseReleased");
+        // GD.Print("OnLeftMouseReleased");
     }
     
     #endregion

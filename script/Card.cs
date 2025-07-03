@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using CardGame.script.constant;
 
 namespace CardGame.script;
 
@@ -24,15 +25,27 @@ public partial class Card : Node2D
     public override void _Ready()
     {
         // 连接Area2D节点的OnMouseEnter信号
-        Area2D area2D = GetNode<Area2D>("Area2D");
-        area2D.MouseEntered += OnMouseEnter;
-        area2D.MouseExited += OnMouseExit;
-
-        /*if (GetParent().GetType() != typeof(CardManager))
+        Area2D cardArea2D = GetNode<Area2D>("Area2D");
+        if (cardArea2D != null)
         {
-            GD.PrintErr("Card ERROR:获取不到父对象CardManager");
-            return;
-        }*/
+            cardArea2D.CollisionLayer = Constant.LAYER_CARD;
+            cardArea2D.CollisionMask = Constant.LAYER_SLOT;     //卡牌需要检测卡槽，所以mask包含卡槽层
+            
+            // 连接信号
+            cardArea2D.MouseEntered += OnMouseEnter;
+            cardArea2D.MouseExited += OnMouseExit;
+            
+            GD.Print(cardArea2D);
+        }
+        else
+        {
+            Utils.PrintErr(this,"当前卡牌设置layer和mask失败，检测不到Area2D");
+        }
+        
+        
+
+        
+        
         // 用于每当卡片在父节点CardManager实例化时，直接连接信号，无需一个个手动连接
         try
         {

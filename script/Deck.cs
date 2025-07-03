@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using CardGame.script.constant;
 
 public partial class Deck : Node2D
 {
@@ -13,7 +14,7 @@ public partial class Deck : Node2D
 	public override void _Ready()
 	{
 		Area2D area2D = GetNode<Area2D>("Area2D");
-		area2D.CollisionMask = InputManager.COLLISION_MASK_DECK;
+		area2D.CollisionMask = Constant.LAYER_DECK;
 	}
 
 	public void DrawCard()

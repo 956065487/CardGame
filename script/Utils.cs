@@ -13,4 +13,14 @@ public static class Utils
     {
         GD.PrintErr(" 错误： " + msg);
     }
+    
+    public static void Print(string msg)
+    {
+        GD.Print(msg);
+    }
+    
+    public static void Print(Node node,string msg)
+    {
+        GD.Print("[" + node.GetType().Name + "]" + node.GetName() + " : " + msg);
+    }
 }

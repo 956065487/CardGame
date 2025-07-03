@@ -1,18 +1,16 @@
 using Godot;
 using System;
 using CardGame.script;
+using CardGame.script.constant;
 using Godot.Collections;
 
 public partial class InputManager : Node2D
 {
     #region 常量、变量、信号
 
-    public const int COLLISION_MASK_CARD = 1;
-    public const int COLLISION_MASK_DECK = 2;
-    public const int COLLISION_MASK_CARD_SLOT = 3;
-
     public CardManager CardManager;
     public Deck Deck;
+    public CardSlot CardSlot;
 
     [Signal]
     public delegate void LeftMouseClickedEventHandler();
@@ -39,6 +37,9 @@ public partial class InputManager : Node2D
                 EmitSignalLeftMouseClicked();
                 // 
                 Node2D checkForCursor = CheckForCursor();
+                // 调试用
+                GD.Print($"InputManager._Input (鼠标按下): CheckForCursor 返回: {checkForCursor?.Name} (类型: {checkForCursor?.GetType().Name})"); 
+                
                 if (checkForCursor is Card)
                 {
                     CardManager.CardBeingDragged = (Card)checkForCursor;
@@ -83,8 +84,8 @@ public partial class InputManager : Node2D
                 Utils.PrintErr(this, "colliderNode2D is not a CollisionObject2D");
             }
 
-            var resultCollisionMask = colliderObject.CollisionMask;
-            if (resultCollisionMask == COLLISION_MASK_CARD)
+            var resultCollisionLayer = colliderObject.CollisionLayer;
+            if (resultCollisionLayer == Constant.LAYER_CARD)
             {
                 // Card对象 被 点击
                 if (colliderObject.GetParent().GetType() == typeof(Card))
@@ -92,14 +93,14 @@ public partial class InputManager : Node2D
                     return colliderObject.GetParent() as Card;
                 }
             }
-            else if (resultCollisionMask == COLLISION_MASK_DECK)
+            else if (resultCollisionLayer == Constant.LAYER_DECK)
             {
                 // TODO 牌组被点击后的事件未实现
                 // 牌组 被 点击
                 GD.Print("这里是牌组");
                 Utils.PrintErr(this,"牌组逻辑尚未实现");
             }
-            else if (resultCollisionMask == COLLISION_MASK_CARD_SLOT)
+            else if (resultCollisionLayer == Constant.LAYER_SLOT)
             {
                 // 卡槽 被 点击
                 if (colliderObject.GetParent() is CardSlot)
@@ -115,32 +116,107 @@ public partial class InputManager : Node2D
     }
 
     /**
+     * 检测2个矩形重叠面积
+     */
+    private float CalculateOverlapArea(Rect2 rect1, Rect2 rect2)
+    {
+        Rect2 intersection = rect1.Intersection(rect2);
+        if (intersection.Size.X <= 0 || intersection.Size.Y <= 0)
+        {
+            return 0.0f; //没有重叠
+        }
+        return intersection.Size.X * intersection.Size.Y;
+    }
+    
+
+    /**
      * 鼠标放开，不再拖拽时
      */
     private void FinishedDragged()
     {
-        Node2D checkForCursor = CheckForCursor();
-        CardSlot cardSlot = null;
-        if (checkForCursor is CardSlot)
+        if (CardManager.CardBeingDragged == null)
         {
-            cardSlot = checkForCursor as CardSlot;
+            GD.Print("FinishedDragged: 没有卡牌正在拖拽。");
+            return;
         }
 
-        if (cardSlot != null && !cardSlot.CardInSlot && CardManager.CardBeingDragged != null)
+        Area2D draggedCardArea2d = CardManager.CardBeingDragged.GetNodeOrNull<Area2D>("Area2D");
+
+        if (draggedCardArea2d == null)
         {
-            // 说明在空卡槽上面
-            CardManager.CardBeingDragged.Position = cardSlot.Position;
-            CardManager.CardBeingDragged.GetNode<CollisionShape2D>("Area2D/CollisionShape2D").Disabled = true;
-            cardSlot.CardInSlot = true;
+            Utils.PrintErr(this, "被拖拽卡牌没有名为 'Area2D' 的 Area2D 子节点。无法检测重叠");
+            // 无法检测，移回手牌
+            CardManager.PlayerHandNode2d.AddToHand(CardManager.CardBeingDragged);
+            CardManager.CardBeingDragged = null;
+            return;
+        }
+
+        Array<Area2D> overlappingAreas = draggedCardArea2d.GetOverlappingAreas(); //获取所有与拖拽卡片重叠的区域
+        
+        CardSlot bestCardSlot = null;   // 储存最优卡槽
+        float maxOverlap = 0.0f;        //储存最大重叠面积
+        
+        Utils.Print(this,$"检测到{overlappingAreas.Count}个重叠区域");
+
+        foreach (Area2D overlappingArea in overlappingAreas)
+        {
+            Utils.Print(this,$"  重叠区域: {overlappingArea.Name} (类型: {overlappingArea.GetType().Name})");
+            if (overlappingArea.GetParent() != null)
+            {
+                
+            }
+
+            if (overlappingArea.GetParent() is CardSlot currentCardSlot && !currentCardSlot.CardInSlot)
+            {
+                Utils.Print(this,$"找到一个空卡槽！{currentCardSlot.Name}");
+
+                // 获取卡牌矩形全局矩形
+                Rect2 cardRect2 = CardManager.CardBeingDragged.GetViewportRect();
+                cardRect2.Position += CardManager.CardBeingDragged.GlobalPosition;
+                
+                // 获取卡槽全局矩形
+                Rect2 currentCardSlotRect2 = currentCardSlot.GetViewportRect();
+                currentCardSlotRect2.Position += currentCardSlot.GlobalPosition;
+
+                float calculateOverlapArea = CalculateOverlapArea(cardRect2, currentCardSlotRect2);
+                Utils.Print(this,$"重叠面积 = {calculateOverlapArea}");
+
+                if (calculateOverlapArea > maxOverlap)
+                {
+                    maxOverlap = calculateOverlapArea;
+                    bestCardSlot = currentCardSlot;
+                }
+            }
+        }
+        
+        // 判断是否获得了最好的卡槽
+        if (bestCardSlot != null && maxOverlap > 0)
+        {
+            CardManager.CardBeingDragged.Position = bestCardSlot.Position;
+            bestCardSlot.CardInSlot = true; // 标记卡槽被占用
             CardManager.PlayerHandNode2d.RemoveCardFromHand(CardManager.CardBeingDragged);
         }
         else
         {
             CardManager.PlayerHandNode2d.AddToHand(CardManager.CardBeingDragged);
         }
-
+        
+        // 无论吸附成功与否，都要重新启用卡牌的碰撞体
+        CollisionShape2D cardCollisionShape = CardManager.CardBeingDragged
+            .GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
+        if (cardCollisionShape != null)
+        {
+            cardCollisionShape.Disabled = false;
+        }
+        else
+        {
+            Utils.PrintErr(this, "FinishedDragged: 被拖拽卡牌的 Area2D 下未找到 CollisionShape2D。请检查路径。");
+        }
+        
         CardManager.CardBeingDragged = null;
     }
+    
+    
 
     #endregion
 }
