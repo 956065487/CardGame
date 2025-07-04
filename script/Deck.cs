@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using CardGame.script;
 using CardGame.script.constant;
 
 public partial class Deck : Node2D
@@ -14,21 +15,26 @@ public partial class Deck : Node2D
 	public override void _Ready()
 	{
 		Area2D area2D = GetNode<Area2D>("Area2D");
-		area2D.CollisionMask = Constant.LAYER_DECK;
+		area2D.CollisionLayer = Constant.LAYER_DECK;
 	}
 
 	public void DrawCard()
 	{
 		GD.Print("DrawCard");
-		/*PackedScene cardScene = GD.Load<PackedScene>(CARD_SCENE_PATH);
-
-		for (int i = 0; i < CARD_COUNT_IN_HAND; i++)
+		PackedScene cardScene = GD.Load<PackedScene>(Constant.CARD_SCENE_PATH);
+		PlayerHand playerHand = GetNodeOrNull<PlayerHand>("/root/Main/PlayerHand");
+		if (playerHand == null)
 		{
-			Card card = (Card)cardScene.Instantiate();
-			GetNode("/root/Main/CardManager").AddChild(card);
-			card.Name = "Card";
-			AddToHand(card);
-            
-		}*/
+			Utils.PrintErr(this,"获取不到playerHand实例！");
+			return;
+		}
+		
+		for (int i = 0; i < _playerDeck.Count; i++)
+		{
+			Card newCard = (Card)cardScene.Instantiate();
+			GetNode("/root/Main/CardManager").AddChild(newCard);
+			newCard.Name = "Card";
+			playerHand.AddToHand(newCard);
+		}
 	}
 }

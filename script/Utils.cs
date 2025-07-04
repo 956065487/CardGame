@@ -30,7 +30,7 @@ public static class Utils
     }
     
     /**
-     * GD.Print,附带打印节点类型，节点名
+     * GD.Print,附带打印节点类型，节点名，默认使用this就能调用当前节点
      */
     public static void Print(Node node,string msg)
     {

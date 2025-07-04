@@ -8,8 +8,7 @@ public partial class PlayerHand : Node2D
     #region 常量、属性
 
     // 常量
-    public const String CARD_SCENE_PATH = "res://scene/Card.tscn";
-    public const int CARD_COUNT_IN_HAND = 8;
+    // public const int CARD_COUNT_IN_HAND = 8;
     private const int CARD_WIDTH = 200;
     private const float HAND_Y_POSITION = 880;  // 手牌上的Y坐标
 
@@ -28,18 +27,6 @@ public partial class PlayerHand : Node2D
         _centerScreenX = GetViewportRect().Size.X / 2;
         _centerScreenY = GetViewportRect().Size.Y / 2;
         GD.Print("viewport  X= " + _centerScreenX);
-
-        PackedScene cardScene = GD.Load<PackedScene>(CARD_SCENE_PATH);
-
-        for (int i = 0; i < CARD_COUNT_IN_HAND; i++)
-        {
-            Card card = (Card)cardScene.Instantiate();
-            GetNode("/root/Main/CardManager").AddChild(card);
-            card.Name = "Card";
-            AddToHand(card);
-            
-        }
-        
         
     }
 

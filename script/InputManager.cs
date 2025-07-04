@@ -38,7 +38,7 @@ public partial class InputManager : Node2D
                 // 
                 Node2D checkForCursor = CheckForCursor();
                 // 调试用
-                GD.Print($"InputManager._Input (鼠标按下): CheckForCursor 返回: {checkForCursor?.Name} (类型: {checkForCursor?.GetType().Name})"); 
+                // GD.Print($"InputManager._Input (鼠标按下): CheckForCursor 返回: {checkForCursor?.Name} (类型: {checkForCursor?.GetType().Name})"); 
                 
                 if (checkForCursor is Card)
                 {
@@ -98,7 +98,7 @@ public partial class InputManager : Node2D
                 // TODO 牌组被点击后的事件未实现
                 // 牌组 被 点击
                 GD.Print("这里是牌组");
-                Utils.PrintErr(this,"牌组逻辑尚未实现");
+                Deck.DrawCard();    // 生成卡牌
             }
             else if (resultCollisionLayer == Constant.LAYER_SLOT)
             {
