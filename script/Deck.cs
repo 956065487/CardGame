@@ -20,6 +20,18 @@ public partial class Deck : Node2D
 
 	public void DrawCard()
 	{
+		if (_playerDeck.Count == 0)
+		{
+			CollisionShape2D deckCollisionShape2D = 
+				GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
+			deckCollisionShape2D.Disabled = true;
+			Sprite2D deckSprite2D = GetNodeOrNull<Sprite2D>("Sprite2D");
+			deckSprite2D.Visible = false;
+			return;
+		}
+		var cardDraw = _playerDeck[0];
+		_playerDeck.Remove(cardDraw);
+		
 		GD.Print("DrawCard");
 		PackedScene cardScene = GD.Load<PackedScene>(Constant.CARD_SCENE_PATH);
 		PlayerHand playerHand = GetNodeOrNull<PlayerHand>("/root/Main/PlayerHand");
@@ -29,12 +41,10 @@ public partial class Deck : Node2D
 			return;
 		}
 		
-		for (int i = 0; i < _playerDeck.Count; i++)
-		{
-			Card newCard = (Card)cardScene.Instantiate();
-			GetNode("/root/Main/CardManager").AddChild(newCard);
-			newCard.Name = "Card";
-			playerHand.AddToHand(newCard);
-		}
+		Card newCard = (Card)cardScene.Instantiate();
+		GetNode("/root/Main/CardManager").AddChild(newCard);
+		newCard.Name = "Card";
+		playerHand.AddToHand(newCard);
+		
 	}
 }

@@ -4,20 +4,20 @@
 [ext_resource type="Script" uid="uid://csb72fkjohh5d" path="res://script/Card.cs" id="1_fjayt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bqp8r"]
-size = Vector2(141, 142)
+size = Vector2(128, 179)
 
 [node name="Card" type="Node2D"]
+position = Vector2(396, 814)
 script = ExtResource("1_fjayt")
 
 [node name="CardImg" type="Sprite2D" parent="."]
-position = Vector2(1, 3)
-scale = Vector2(2.875, 3.01923)
+position = Vector2(0, -0.999993)
+scale = Vector2(2.6775, 3.84295)
 texture = ExtResource("1_bv7e0")
-metadata/_edit_group_ = true
 
 [node name="Area2D" type="Area2D" parent="."]
-metadata/_edit_group_ = true
+position = Vector2(2, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, 2)
+position = Vector2(-3, -3.5)
 shape = SubResource("RectangleShape2D_bqp8r")
