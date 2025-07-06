@@ -6,4 +6,7 @@
   <ItemGroup>
     <Folder Include="scene\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="script\datebase\CardInfo.json" />
+  </ItemGroup>
 </Project>

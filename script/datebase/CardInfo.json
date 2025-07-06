@@ -1,0 +1,22 @@
+{
+  "CardInfos" : {
+    "Knight" : {
+      "Name" : "骑士",
+      "Hp" : 3,
+      "Attack" : 2,
+      "Description" : "一名忠诚的骑士"
+    },
+    "Archer" : {
+      "Name" : "弓箭手",
+      "Hp" : 1,
+      "Attack" : 1,
+      "Description" : "一名敏捷的弓箭手"
+    },
+    "Demon" : {
+      "Name" : "恶魔",
+      "Hp" : 10,
+      "Attack" : 5,
+      "Description" : "一名强大的恶魔"
+    }
+  }
+}

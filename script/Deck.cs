@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using CardGame.script;
 using CardGame.script.constant;
 
@@ -20,6 +21,7 @@ public partial class Deck : Node2D
 		area2D.CollisionLayer = Constant.LAYER_DECK;
 		_numLabel = GetNode<RichTextLabel>("NumberLabel");
 		_numLabel.Text = _playerDeck.Count.ToString();
+		
 	}
 
 	public void DrawCard()
