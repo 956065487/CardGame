@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using CardGame.script.constant;
+using CardGame.script.pojo;
 
 namespace CardGame.script;
 
@@ -11,11 +12,12 @@ public partial class Card : Node2D
 
     [Signal]
     public delegate void HoverEventHandler(Card card);
-
     [Signal]
     public delegate void HoverOffEventHandler(Card card);
-
     public Vector2 PositionInHand {set; get;}
+    public CardInfo CardInfo {set; get;}
+    private RichTextLabel _attackLabel;
+    private RichTextLabel _healthLabel;
     
     #endregion
 
@@ -24,6 +26,9 @@ public partial class Card : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        // 更新卡牌标签
+        _attackLabel = GetNodeOrNull<RichTextLabel>("Attack");
+        _healthLabel = GetNodeOrNull<RichTextLabel>("Health");
         // 连接Area2D节点的OnMouseEnter信号
         Area2D cardArea2D = GetNode<Area2D>("Area2D");
         if (cardArea2D != null)
@@ -41,9 +46,6 @@ public partial class Card : Node2D
         {
             Utils.PrintErr(this,"当前卡牌设置layer和mask失败，检测不到Area2D");
         }
-        
-        
-
         
         
         // 用于每当卡片在父节点CardManager实例化时，直接连接信号，无需一个个手动连接
@@ -91,5 +93,16 @@ public partial class Card : Node2D
         EmitSignalHoverOff(this);
     }
 
+    /**
+     * 将卡牌信息展示到实例上
+     * 例如，生命值，攻击力，名字以及描述
+     * 目前只更新生命值和攻击力
+     */
+    public void UpdateCardInfo()
+    {
+        _attackLabel.Text = $"{CardInfo.Attack}";
+        _healthLabel.Text = $"{CardInfo.Hp}";
+    }
+    
     #endregion
 }

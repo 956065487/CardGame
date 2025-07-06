@@ -14,7 +14,7 @@ public partial class CardDataLoader : Node
     #region 变量
 
     // 用于存储所有卡牌数据的字典，键是卡牌ID（如"Knight"），值是CardStats对象
-    private Dictionary _allCardInfos = new Dictionary();
+    private static Dictionary _allCardInfos = new Dictionary();
 
     // JSON文件路径
     private const string CARDS_DATA_PATH = "res://script/datebase/CardInfo.json";
@@ -28,7 +28,7 @@ public partial class CardDataLoader : Node
     {
         LoadCardData();
         CardInfo cardInfo = GetCardInfo("Knight");
-        GD.Print(cardInfo);
+        Utils.Print(cardInfo.ToString());
     }
 
     #endregion
@@ -43,7 +43,7 @@ public partial class CardDataLoader : Node
         // 检查文件是否存在
         if (!FileAccess.FileExists(CARDS_DATA_PATH))
         {
-            GD.PrintErr($"错误: JSON文件不存在于 '{CARDS_DATA_PATH}'");
+            Utils.PrintErr(this,$"错误: JSON文件不存在于 '{CARDS_DATA_PATH}'");
             return;
         }
 
@@ -51,7 +51,7 @@ public partial class CardDataLoader : Node
         using var file = FileAccess.Open(CARDS_DATA_PATH, FileAccess.ModeFlags.Read);
         if (file == null)
         {
-            GD.PrintErr($"错误: 无法打开文件 '{CARDS_DATA_PATH}'. 错误码: {FileAccess.GetOpenError()}");
+            Utils.PrintErr(this,$"无法打开文件 '{CARDS_DATA_PATH}'. 错误码: {FileAccess.GetOpenError()}");
             return;
         }
 
@@ -67,14 +67,14 @@ public partial class CardDataLoader : Node
     /**
      * 根据卡牌ID获取卡牌数据
      */
-    public CardInfo GetCardInfo(string cardId)
+    public static CardInfo GetCardInfo(string cardId)
     {
         if (_allCardInfos.ContainsKey(cardId))
         {
             return new CardInfo(_allCardInfos[cardId].AsGodotDictionary());
         }
 
-        GD.PrintErr($"错误: 未找到ID为 '{cardId}' 的卡牌数据。");
+        Utils.PrintErr($"未找到ID为 '{cardId}' 的卡牌数据。");
         return null;
     }
 

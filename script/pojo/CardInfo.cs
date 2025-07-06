@@ -29,6 +29,6 @@ public partial class CardInfo : GodotObject
 
     public override string ToString()
     {
-        return $"Name = {Name} , Hp = {Hp} , Attack = {Attack} , Description = {Description}";
+        return $"{{Name = {Name} , Hp = {Hp} , Attack = {Attack} , Description = {Description}}}";
     }
 }
