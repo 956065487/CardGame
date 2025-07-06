@@ -4,38 +4,38 @@
 [ext_resource type="Script" uid="uid://csb72fkjohh5d" path="res://script/Card.cs" id="1_fjayt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bqp8r"]
-size = Vector2(128, 179)
+size = Vector2(143.5, 169)
 
 [node name="Card" type="Node2D"]
-position = Vector2(396, 814)
+position = Vector2(396, 808)
 script = ExtResource("1_fjayt")
 
 [node name="CardImg" type="Sprite2D" parent="."]
-position = Vector2(0, -0.999993)
-scale = Vector2(2.6775, 3.84295)
+position = Vector2(2.25001, 0.999977)
+scale = Vector2(2.91, 3.54167)
 texture = ExtResource("1_bv7e0")
 
 [node name="Area2D" type="Area2D" parent="."]
-position = Vector2(2, 1)
+position = Vector2(-2, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(-3, -3.5)
+position = Vector2(4.25, -1)
 shape = SubResource("RectangleShape2D_bqp8r")
 
 [node name="Attack" type="RichTextLabel" parent="."]
 offset_left = -60.0
-offset_top = 50.0
+offset_top = 38.0
 offset_right = -33.0
-offset_bottom = 74.0
+offset_bottom = 62.0
 scale = Vector2(2, 2)
 theme_override_colors/default_color = Color(0.817891, 0.719018, 0, 1)
 text = "0"
 
 [node name="Health" type="RichTextLabel" parent="."]
-offset_left = 30.0
-offset_top = 50.0
-offset_right = 63.0
-offset_bottom = 76.0
+offset_left = 43.0
+offset_top = 40.0
+offset_right = 76.0
+offset_bottom = 66.0
 scale = Vector2(2, 2)
 theme_override_colors/default_color = Color(0.98989, 0.11058, 0, 1)
 text = "0"

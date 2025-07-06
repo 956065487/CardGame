@@ -27,8 +27,8 @@ public partial class CardDataLoader : Node
     public override void _Ready()
     {
         LoadCardData();
-        CardInfo cardInfo = GetCardInfo("Knight");
-        Utils.Print(cardInfo.ToString());
+        //CardInfo cardInfo = GetCardInfo("Knight");
+        //Utils.Print(cardInfo.ToString());
     }
 
     #endregion

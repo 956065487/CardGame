@@ -10,7 +10,7 @@ public partial class Deck : Node2D
 {
 	#region 变量
 
-	private List<String> _playerDeck = ["Knight", "Knight", "Knight"];
+	private List<String> _playerDeck = ["Knight", "Archer", "Demon"];
 
 	private RichTextLabel _numLabel;	// 显示卡组数量用
 
@@ -64,7 +64,10 @@ public partial class Deck : Node2D
 		Card newCard = (Card)cardScene.Instantiate();
 		GetNode("/root/Main/CardManager").AddChild(newCard);
 		newCard.Name = "Card";
-		CardInfo cardInfo = CardDataLoader.GetCardInfo("Knight");
+		Sprite2D CardImg = newCard.GetNodeOrNull<Sprite2D>("CardImg");
+		CardImg.Texture = GD.Load<Texture2D>($"res://asset/CardImg/" + cardDraw +"Card.png");
+		
+		CardInfo cardInfo = CardDataLoader.GetCardInfo(cardDraw);
 		newCard.CardInfo = cardInfo;
 		newCard.UpdateCardInfo();
 		
