@@ -72,6 +72,8 @@ public partial class Deck : Node2D
 		newCard.UpdateCardInfo();
 		
 		_playerHand.AddToHand(newCard);
+		// 播放翻转动画
+		newCard.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
 		
 		
 	}

@@ -160,7 +160,7 @@ public partial class InputManager : Node2D
 
         foreach (Area2D overlappingArea in overlappingAreas)
         {
-            Utils.Print(this,$"  重叠区域: {overlappingArea.Name} (类型: {overlappingArea.GetType().Name})");
+            Utils.Print(this,$"重叠区域: {overlappingArea.Name} (类型: {overlappingArea.GetType().Name})");
             if (overlappingArea.GetParent() != null)
             {
                 
@@ -168,6 +168,7 @@ public partial class InputManager : Node2D
 
             if (overlappingArea.GetParent() is CardSlot currentCardSlot && !currentCardSlot.CardInSlot)
             {
+                // 重叠区域为卡槽，并且卡槽为空
                 Utils.Print(this,$"找到一个空卡槽！{currentCardSlot.Name}");
 
                 // 获取卡牌矩形全局矩形
@@ -195,23 +196,24 @@ public partial class InputManager : Node2D
             CardManager.CardBeingDragged.Position = bestCardSlot.Position;
             bestCardSlot.CardInSlot = true; // 标记卡槽被占用
             CardManager.PlayerHandNode2d.RemoveCardFromHand(CardManager.CardBeingDragged);
+            // 无论吸附成功与否，都要重新启用卡牌的碰撞体
+            CollisionShape2D cardCollisionShape = CardManager.CardBeingDragged
+                .GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
+            if (cardCollisionShape != null)
+            {
+                cardCollisionShape.Disabled = true;
+            }
+            else
+            {
+                Utils.PrintErr(this, "FinishedDragged: 被拖拽卡牌的 Area2D 下未找到 CollisionShape2D。请检查路径。");
+            }
         }
         else
         {
             CardManager.PlayerHandNode2d.AddToHand(CardManager.CardBeingDragged);
         }
         
-        // 无论吸附成功与否，都要重新启用卡牌的碰撞体
-        CollisionShape2D cardCollisionShape = CardManager.CardBeingDragged
-            .GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
-        if (cardCollisionShape != null)
-        {
-            cardCollisionShape.Disabled = false;
-        }
-        else
-        {
-            Utils.PrintErr(this, "FinishedDragged: 被拖拽卡牌的 Area2D 下未找到 CollisionShape2D。请检查路径。");
-        }
+        
         
         CardManager.CardBeingDragged = null;
     }
