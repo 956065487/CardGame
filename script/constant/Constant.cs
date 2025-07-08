@@ -9,5 +9,12 @@ public static class Constant
     public const uint LAYER_SLOT = 1 << 2;   // 第 3 层
     
     
-    public const String CARD_SCENE_PATH = "res://scene/Card.tscn"; 
+    public const String CARD_SCENE_PATH = "res://scene/Card.tscn";
+
+
+    public const float DEFAULT_CARD_SCALE_SIZE = 0.8f;
+    // 卡牌高亮大小
+    public const float CARD_HIGH_LIGHT_SIZE = 1f;
+    
+    private const int CARD_WIDTH = 200;
 }

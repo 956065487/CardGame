@@ -1,5 +1,6 @@
 using System;
 using System.Reflection.Metadata.Ecma335;
+using CardGame.script.constant;
 using Godot;
 using Godot.Collections;
 
@@ -62,13 +63,13 @@ public partial class CardManager : Node2D
 
         if (isHoured)
         {
-            card.Scale = new Vector2((float)1.2, (float)1.2);
+            card.Scale = new Vector2((float)Constant.CARD_HIGH_LIGHT_SIZE, (float)Constant.CARD_HIGH_LIGHT_SIZE);
             card.ZIndex = 2;
             card.MoveToFront();
         }
         else
         {
-            card.Scale = new Vector2(1, 1);
+            card.Scale = new Vector2(Constant.DEFAULT_CARD_SCALE_SIZE, Constant.DEFAULT_CARD_SCALE_SIZE);
         }
     }
 

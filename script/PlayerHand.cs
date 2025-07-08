@@ -9,10 +9,11 @@ public partial class PlayerHand : Node2D
 
     // 常量
     // public const int CARD_COUNT_IN_HAND = 8;
-    private const int CARD_WIDTH = 200;
+    
     private const float HAND_Y_POSITION = 880;  // 手牌上的Y坐标
 
     // 变量
+    private int _cardWidth;   // 卡牌宽度，用于计算间隔等
     private List<Card> _playerHandCards = new List<Card>();
     private float _centerScreenX;
     private float _centerScreenY;
@@ -26,7 +27,6 @@ public partial class PlayerHand : Node2D
     {
         _centerScreenX = GetViewportRect().Size.X / 2;
         _centerScreenY = GetViewportRect().Size.Y / 2;
-        GD.Print("viewport  X= " + _centerScreenX);
         
     }
 
@@ -48,6 +48,16 @@ public partial class PlayerHand : Node2D
         {
             return;
         }
+        
+        if (_cardWidth == 0)
+        {
+            // 获取卡牌宽度
+            Sprite2D cardImgSprite2D = card.GetNode<Sprite2D>("CardImg");
+            int currentCardWidth = cardImgSprite2D.Texture.GetWidth();
+            this._cardWidth = currentCardWidth;
+        }
+        
+        
         if (!_playerHandCards.Contains(card))
         {
            // 卡片不再手牌中时 
@@ -95,8 +105,8 @@ public partial class PlayerHand : Node2D
      */
     private float CalculateCardPositon(int index)
     {
-        var totalWidth = (_playerHandCards.Count - 1) * CARD_WIDTH;
-        var xOffset = _centerScreenX + index*CARD_WIDTH - totalWidth / 2;
+        var totalWidth = (_playerHandCards.Count - 1) * _cardWidth;
+        var xOffset = _centerScreenX + index*_cardWidth - totalWidth / 2;
         return xOffset;
     }
 

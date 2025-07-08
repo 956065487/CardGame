@@ -13,7 +13,7 @@
 script = ExtResource("1_h6nst")
 
 [node name="CardSlot" parent="." instance=ExtResource("3_hr7lf")]
-position = Vector2(137, 381)
+position = Vector2(960, 750)
 
 [node name="CardSlot2" parent="." instance=ExtResource("3_hr7lf")]
 position = Vector2(338, 382)
@@ -25,7 +25,7 @@ position = Vector2(549, 383)
 script = ExtResource("3_yiwpq")
 
 [node name="Deck" parent="." instance=ExtResource("4_mnmej")]
-position = Vector2(150, 880)
+position = Vector2(144, 931)
 script = ExtResource("5_o6q0f")
 
 [node name="InputManager" parent="." instance=ExtResource("6_o6q0f")]
