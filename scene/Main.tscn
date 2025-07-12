@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://blgcvsw5expnj"]
+[gd_scene load_steps=8 format=3 uid="uid://blgcvsw5expnj"]
 
 [ext_resource type="Script" uid="uid://ej2mrtdh58b3" path="res://script/CardManager.cs" id="1_h6nst"]
 [ext_resource type="PackedScene" uid="uid://cm77vy8e2lbtb" path="res://scene/CardSlot.tscn" id="3_hr7lf"]
@@ -6,26 +6,91 @@
 [ext_resource type="PackedScene" uid="uid://crt0nmbvft01a" path="res://scene/Deck.tscn" id="4_mnmej"]
 [ext_resource type="Script" uid="uid://dmfx01hd2qnyv" path="res://script/Deck.cs" id="5_o6q0f"]
 [ext_resource type="PackedScene" uid="uid://rf2kib262htm" path="res://scene/InputManager.tscn" id="6_o6q0f"]
+[ext_resource type="PackedScene" uid="uid://c1fo6y1b2o5bk" path="res://scene/OpponentDeck.tscn" id="7_s5yxy"]
 
 [node name="Main" type="Node2D"]
 
 [node name="CardManager" type="Node2D" parent="."]
 script = ExtResource("1_h6nst")
 
-[node name="CardSlot" parent="." instance=ExtResource("3_hr7lf")]
-position = Vector2(960, 750)
-
-[node name="CardSlot2" parent="." instance=ExtResource("3_hr7lf")]
-position = Vector2(338, 382)
-
-[node name="CardSlot3" parent="." instance=ExtResource("3_hr7lf")]
-position = Vector2(549, 383)
-
 [node name="PlayerHand" type="Node2D" parent="."]
 script = ExtResource("3_yiwpq")
 
 [node name="Deck" parent="." instance=ExtResource("4_mnmej")]
 position = Vector2(144, 931)
+scale = Vector2(0.6, 0.6)
 script = ExtResource("5_o6q0f")
 
 [node name="InputManager" parent="." instance=ExtResource("6_o6q0f")]
+
+[node name="PlayerCardSlots" type="Node2D" parent="."]
+position = Vector2(-1, 1)
+metadata/_edit_group_ = true
+
+[node name="CardSlot" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(1166, 750)
+
+[node name="CardSlot4" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(1046, 750)
+
+[node name="CardSlot5" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(926, 750)
+
+[node name="CardSlot6" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(806, 750)
+
+[node name="CardSlot7" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(686, 750)
+
+[node name="CardSlot2" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(1166, 620)
+
+[node name="CardSlot8" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(1046, 620)
+
+[node name="CardSlot9" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(926, 620)
+
+[node name="CardSlot10" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(806, 620)
+
+[node name="CardSlot11" parent="PlayerCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(686, 620)
+
+[node name="OpponentCardSlots" type="Node2D" parent="."]
+position = Vector2(0, -9)
+metadata/_edit_group_ = true
+
+[node name="CardSlot" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(1165, 404)
+
+[node name="CardSlot4" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(1045, 404)
+
+[node name="CardSlot5" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(925, 404)
+
+[node name="CardSlot6" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(805, 404)
+
+[node name="CardSlot7" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(685, 404)
+
+[node name="CardSlot2" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(1165, 274)
+
+[node name="CardSlot8" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(1045, 274)
+
+[node name="CardSlot9" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(925, 274)
+
+[node name="CardSlot10" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(805, 274)
+
+[node name="CardSlot11" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+position = Vector2(685, 274)
+
+[node name="OpponentDeck" parent="." instance=ExtResource("7_s5yxy")]
+position = Vector2(1758, 146)
+scale = Vector2(0.6, 0.6)

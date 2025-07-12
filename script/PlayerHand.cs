@@ -92,7 +92,7 @@ public partial class PlayerHand : Node2D
      * 动画移动卡牌位置
      */
     private void AnimateCardToPosition(Card card, Vector2 newPosition)
-    {
+    { 
         var tween = GetTree().CreateTween();
         tween.TweenProperty(card, "position", newPosition,1);
 

@@ -26,6 +26,20 @@ public partial class Card : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        // 设置卡牌出现的初始位置
+        Node main = GetParent().GetParent();
+        if (main == null)
+        {
+            Utils.PrintErr(this,"获取Main节点失败！");
+        }
+
+        Deck deck = main.GetNodeOrNull<Deck>("Deck");
+        if (deck == null)
+        {
+            Utils.PrintErr(this,"获取Deck节点失败！");
+        }
+        SetPosition(deck.GlobalPosition);
+        
         // 更新卡牌标签
         _attackLabel = GetNodeOrNull<RichTextLabel>("Attack");
         _healthLabel = GetNodeOrNull<RichTextLabel>("Health");

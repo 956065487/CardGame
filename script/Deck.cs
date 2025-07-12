@@ -6,6 +6,7 @@ using CardGame.script;
 using CardGame.script.constant;
 using CardGame.script.pojo;
 
+[GlobalClass]
 public partial class Deck : Node2D
 {
 	#region 变量
@@ -27,6 +28,7 @@ public partial class Deck : Node2D
 		_playerHand = GetNodeOrNull<PlayerHand>("/root/Main/PlayerHand");
 		
 		CardInfo knightInfo = CardDataLoader.GetCardInfo("Knight");
+		GD.Print("这是原始deck");
 		
 	}
 
@@ -38,14 +40,17 @@ public partial class Deck : Node2D
 		// 当牌堆没牌时
 		if (_playerDeck.Count == 0)
 		{
-			// 重置隐藏等
+			// 此时是最后一张被发出去，重置隐藏等
 			CollisionShape2D deckCollisionShape2D = 
 				GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
 			deckCollisionShape2D.Disabled = true;
+			return;
+		}
+		else if (_playerDeck.Count == 1)
+		{
 			Sprite2D deckSprite2D = GetNodeOrNull<Sprite2D>("Sprite2D");
 			deckSprite2D.Visible = false;
 			_numLabel.Visible = false;
-			return;
 		}
 		
 		var cardDraw = _playerDeck[0];

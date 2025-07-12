@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1fo6y1b2o5bk"]
+
+[ext_resource type="PackedScene" uid="uid://crt0nmbvft01a" path="res://scene/Deck.tscn" id="1_d5h26"]
+[ext_resource type="Script" uid="uid://bu3n8gjuoax0v" path="res://script/OpponentDeck.cs" id="2_k3l83"]
+
+[node name="OpponentDeck" instance=ExtResource("1_d5h26")]
+script = ExtResource("2_k3l83")
