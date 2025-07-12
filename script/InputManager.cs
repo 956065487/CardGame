@@ -43,6 +43,7 @@ public partial class InputManager : Node2D
                 if (checkForCursor is Card)
                 {
                     CardManager.CardBeingDragged = (Card)checkForCursor;
+                    Utils.Print($"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
                 }
             }
             else
@@ -105,7 +106,8 @@ public partial class InputManager : Node2D
                 // 卡槽 被 点击
                 if (colliderObject.GetParent() is CardSlot)
                 {
-                    GD.Print("这里是卡槽");
+                    CardSlot cardSlot = colliderObject.GetParent() as CardSlot;
+                    Utils.Print(cardSlot,$"这里是卡槽,卡槽类型是 : {cardSlot.CardSlotType}");
                     return colliderObject.GetParent() as CardSlot;
                 }
                 
@@ -161,13 +163,14 @@ public partial class InputManager : Node2D
         foreach (Area2D overlappingArea in overlappingAreas)
         {
             Utils.Print(this,$"重叠区域: {overlappingArea.Name} (类型: {overlappingArea.GetType().Name})");
-            if (overlappingArea.GetParent() != null)
-            {
-                
-            }
-
+            
             if (overlappingArea.GetParent() is CardSlot currentCardSlot && !currentCardSlot.CardInSlot)
             {
+                if (!currentCardSlot.CardSlotType.Equals(CardManager.CardBeingDragged.CardInfo.CardType))
+                {
+                    // 若卡槽和卡牌不是相同类型，跳过当前循环
+                    continue;
+                }
                 // 重叠区域为卡槽，并且卡槽为空
                 Utils.Print(this,$"找到一个空卡槽！{currentCardSlot.Name}");
 
@@ -180,7 +183,7 @@ public partial class InputManager : Node2D
                 currentCardSlotRect2.Position += currentCardSlot.GlobalPosition;
 
                 float calculateOverlapArea = CalculateOverlapArea(cardRect2, currentCardSlotRect2);
-                Utils.Print(this,$"重叠面积 = {calculateOverlapArea}");
+                // Utils.Print(this,$"重叠面积 = {calculateOverlapArea}");
 
                 if (calculateOverlapArea > maxOverlap)
                 {

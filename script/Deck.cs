@@ -11,12 +11,17 @@ public partial class Deck : Node2D
 {
 	#region 变量
 
-	private List<String> _playerDeck = ["Knight", "Archer", "Demon"];
+	private List<String> _playerDeck = ["Knight", "Archer", "Demon", "Knight","Knight","Demon","Archer"];
 
 	private RichTextLabel _numLabel;	// 显示卡组数量用
 
 	private PlayerHand _playerHand;
+	
+	private bool _thisTurnDrawCard = false; // 本回合是否抽卡
 
+	private int _startCardsNum = 3;
+		
+		
 	#endregion
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -29,6 +34,11 @@ public partial class Deck : Node2D
 		
 		CardInfo knightInfo = CardDataLoader.GetCardInfo("Knight");
 		GD.Print("这是原始deck");
+		for (int i = 0; i < _startCardsNum; i++)
+		{
+			DrawCard();
+			_thisTurnDrawCard = false;
+		}
 		
 	}
 
@@ -37,6 +47,12 @@ public partial class Deck : Node2D
 	 */
 	public void DrawCard()
 	{
+		if (_thisTurnDrawCard)
+		{
+			return;
+		}
+		
+		_thisTurnDrawCard = true;
 		// 当牌堆没牌时
 		if (_playerDeck.Count == 0)
 		{
@@ -52,8 +68,9 @@ public partial class Deck : Node2D
 			deckSprite2D.Visible = false;
 			_numLabel.Visible = false;
 		}
-		
-		var cardDraw = _playerDeck[0];
+
+		int randomCardIndex = GD.RandRange(0, _playerDeck.Count-1);
+		var cardDraw = _playerDeck[randomCardIndex];
 		_playerDeck.Remove(cardDraw);
 		_numLabel.Text = _playerDeck.Count.ToString();
 		

@@ -14,6 +14,8 @@ public partial class CardInfo : GodotObject
     public int Hp {set; get;}
     public int Attack {set; get;}
     public String Description {set; get;}
+    
+    public String CardType {set; get;}
 
     public CardInfo()
     {
@@ -24,11 +26,12 @@ public partial class CardInfo : GodotObject
         Name = data.ContainsKey("Name") ? data["Name"].ToString() : "未知";
         Hp = data.ContainsKey("Hp") ? (int)data["Hp"] : 0;
         Attack = data.ContainsKey("Attack") ? (int)data["Attack"] : 0;
-        Description = data.ContainsKey("Description") ? data["Description"].ToString() : "";
+        Description = data.ContainsKey("Description") ? data["Description"].ToString() : "未知";
+        CardType = data.ContainsKey("CardType") ? (string)data["CardType"] : "未知";
     }
 
     public override string ToString()
     {
-        return $"{{Name = {Name} , Hp = {Hp} , Attack = {Attack} , Description = {Description}}}";
+        return $"{{Name = {Name} , Hp = {Hp} , Attack = {Attack} , Description = {Description} , CardType = {CardType} }}";
     }
 }
