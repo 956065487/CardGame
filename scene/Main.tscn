@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=4 uid="uid://blgcvsw5expnj"]
+[gd_scene load_steps=21 format=4 uid="uid://blgcvsw5expnj"]
 
 [ext_resource type="Script" uid="uid://ej2mrtdh58b3" path="res://script/CardManager.cs" id="1_h6nst"]
 [ext_resource type="PackedScene" uid="uid://cm77vy8e2lbtb" path="res://scene/CardSlot.tscn" id="3_hr7lf"]
@@ -11,7 +11,6 @@
 [ext_resource type="PackedScene" uid="uid://c1fo6y1b2o5bk" path="res://scene/OpponentDeck.tscn" id="7_s5yxy"]
 [ext_resource type="Script" uid="uid://ddrsueaupp4mn" path="res://script/cardSlots/Impl/EnemyCardSlot.cs" id="9_x4yfu"]
 [ext_resource type="Texture2D" uid="uid://d3h1n4ykbdgsq" path="res://asset/EndButton.png" id="11_x4yfu"]
-[ext_resource type="Script" uid="uid://c2mg1hwgmyphk" path="res://script/EndButton.cs" id="12_aex65"]
 [ext_resource type="Script" uid="uid://bu7nhp6ib5dkk" path="res://script/BattleManager.cs" id="13_hrl0l"]
 
 [sub_resource type="Image" id="Image_x4yfu"]
@@ -1107,8 +1106,8 @@ offset_top = 503.0
 offset_right = 1632.0
 offset_bottom = 561.0
 theme = SubResource("Theme_08k7p")
+disabled = true
 icon = ExtResource("11_x4yfu")
-script = ExtResource("12_aex65")
 
 [node name="BattleManager" type="Node2D" parent="."]
 script = ExtResource("13_hrl0l")

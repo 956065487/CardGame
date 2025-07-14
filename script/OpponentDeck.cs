@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using CardGame.script;
 
 public partial class OpponentDeck : Deck
 {
@@ -17,5 +18,11 @@ public partial class OpponentDeck : Deck
 	public override void _Process(double delta)
 	{
 		base._Process(delta);
+	}
+
+	public void drawEnemyCard()
+	{
+		// TODO 待实现
+		Utils.PrintErr(this,"drawEnemyCard尚未实现");
 	}
 }
