@@ -43,7 +43,7 @@ public partial class InputManager : Node2D
                 if (checkForCursor is Card)
                 {
                     CardManager.CardBeingDragged = (Card)checkForCursor;
-                    Utils.Print($"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
+                    Utils.Print(this,$"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
                 }
             }
             else
@@ -96,9 +96,6 @@ public partial class InputManager : Node2D
             }
             else if (resultCollisionLayer == Constant.LAYER_DECK)
             {
-                // TODO 牌组被点击后的事件未实现
-                // 牌组 被 点击
-                GD.Print("这里是牌组");
                 Deck.DrawCard();    // 生成卡牌
             }
             else if (resultCollisionLayer == Constant.LAYER_SLOT)
@@ -138,7 +135,6 @@ public partial class InputManager : Node2D
     {
         if (CardManager.CardBeingDragged == null)
         {
-            GD.Print("FinishedDragged: 没有卡牌正在拖拽。");
             return;
         }
 

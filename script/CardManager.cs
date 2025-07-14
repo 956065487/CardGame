@@ -104,7 +104,7 @@ public partial class CardManager : Node2D
         }
 
         _oldCard = card; // 存入当前悬停的卡
-        GD.Print("Manager 中的OnHoverOverCard");
+        // GD.Print("Manager 中的OnHoverOverCard");
         HighLightCard(card, true);
     }
 
@@ -124,7 +124,7 @@ public partial class CardManager : Node2D
             _oldCard = CardBeingDragged; //储存旧卡牌
         }
 
-        GD.Print("Manager 中的OnHoverOffCard");
+        // GD.Print("Manager 中的OnHoverOffCard");
         HighLightCard(card, false);
     }
 

@@ -53,8 +53,6 @@ public partial class Card : Node2D
             // 连接信号
             cardArea2D.MouseEntered += OnMouseEnter;
             cardArea2D.MouseExited += OnMouseExit;
-            
-            GD.Print(cardArea2D);
         }
         else
         {

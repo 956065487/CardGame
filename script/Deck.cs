@@ -33,7 +33,7 @@ public partial class Deck : Node2D
 		_playerHand = GetNodeOrNull<PlayerHand>("/root/Main/PlayerHand");
 		
 		CardInfo knightInfo = CardDataLoader.GetCardInfo("Knight");
-		GD.Print("这是原始deck");
+		// GD.Print("这是原始deck");
 		for (int i = 0; i < _startCardsNum; i++)
 		{
 			DrawCard();
@@ -74,7 +74,7 @@ public partial class Deck : Node2D
 		_playerDeck.Remove(cardDraw);
 		_numLabel.Text = _playerDeck.Count.ToString();
 		
-		GD.Print("DrawCard");
+		//GD.Print("DrawCard");
 		PackedScene cardScene = GD.Load<PackedScene>(Constant.CARD_SCENE_PATH);
 		
 		if (_playerHand == null)
