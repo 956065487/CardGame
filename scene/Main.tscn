@@ -1038,43 +1038,43 @@ script = ExtResource("7_eik88")
 position = Vector2(0, -9)
 metadata/_edit_group_ = true
 
-[node name="CardSlot" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MonsterCardSlot1" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(1165, 404)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot4" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MonsterCardSlot2" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(1045, 404)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot5" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MonsterCardSlot3" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(925, 404)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot6" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MonsterCardSlot4" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(805, 404)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot7" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MonsterCardSlot5" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(685, 404)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot2" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MagicCardSlot6" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(1165, 274)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot8" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MagicCardSlot7" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(1045, 274)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot9" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MagicCardSlot8" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(925, 274)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot10" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MagicCardSlot9" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(805, 274)
 script = ExtResource("9_x4yfu")
 
-[node name="CardSlot11" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
+[node name="MagicCardSlot10" parent="OpponentCardSlots" instance=ExtResource("3_hr7lf")]
 position = Vector2(685, 274)
 script = ExtResource("9_x4yfu")
 
@@ -1106,8 +1106,9 @@ offset_top = 503.0
 offset_right = 1632.0
 offset_bottom = 561.0
 theme = SubResource("Theme_08k7p")
-disabled = true
 texture_normal = ExtResource("11_x4yfu")
 
 [node name="BattleManager" type="Node2D" parent="."]
 script = ExtResource("13_hrl0l")
+
+[node name="BattleTimer" type="Timer" parent="."]
