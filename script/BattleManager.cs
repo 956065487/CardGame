@@ -8,7 +8,7 @@ public partial class BattleManager : Node2D
 	#region 属性，变量
 
 	
-	private Button _endButton;	//回合结束按钮
+	private TextureButton _endButton;	//回合结束按钮
 	private OpponentDeck _opponentDeck;
 
 	#endregion
@@ -41,7 +41,7 @@ public partial class BattleManager : Node2D
 
 	private void GetNodes()
 	{
-		_endButton = GetNodeOrNull<Button>("/root/Main/EndButton");
+		_endButton = GetNodeOrNull<TextureButton>("/root/Main/EndButton");
 		_opponentDeck = GetNodeOrNull<OpponentDeck>("/root/Main/OpponentDeck");
 	}
 	

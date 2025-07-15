@@ -1100,14 +1100,14 @@ offset_bottom = 826.0
 theme_override_font_sizes/normal_font_size = 30
 text = "魔法卡"
 
-[node name="EndButton" type="Button" parent="."]
+[node name="EndButton" type="TextureButton" parent="."]
 offset_left = 1499.0
 offset_top = 503.0
 offset_right = 1632.0
 offset_bottom = 561.0
 theme = SubResource("Theme_08k7p")
 disabled = true
-icon = ExtResource("11_x4yfu")
+texture_normal = ExtResource("11_x4yfu")
 
 [node name="BattleManager" type="Node2D" parent="."]
 script = ExtResource("13_hrl0l")
