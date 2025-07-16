@@ -10,7 +10,7 @@ public partial class PlayerHand : Node2D
     // 常量
     // public const int CARD_COUNT_IN_HAND = 8;
     
-    private const float HAND_Y_POSITION = 880;  // 手牌上的Y坐标
+    private const float HAND_Y_POSITION = 900;  // 手牌上的Y坐标
 
     // 变量
     private int _cardWidth;   // 卡牌宽度，用于计算间隔等

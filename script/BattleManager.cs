@@ -112,7 +112,7 @@ public partial class BattleManager : Node2D
 
         if (_opponentDeck != null)
         {
-            _opponentDeck.drawEnemyCard();
+            _opponentDeck.DrawEnemyCard();
         }
         else
         {

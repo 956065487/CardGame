@@ -32,8 +32,6 @@ public partial class Deck : Node2D
 		_numLabel.Text = _playerDeck.Count.ToString();
 		_playerHand = GetNodeOrNull<PlayerHand>("/root/Main/PlayerHand");
 		
-		CardInfo knightInfo = CardDataLoader.GetCardInfo("Knight");
-		// GD.Print("这是原始deck");
 		for (int i = 0; i < _startCardsNum; i++)
 		{
 			DrawCard();

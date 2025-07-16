@@ -39,10 +39,14 @@ public partial class InputManager : Node2D
                 Node2D checkForCursor = CheckForCursor();
                 // 调试用
                 // GD.Print($"InputManager._Input (鼠标按下): CheckForCursor 返回: {checkForCursor?.Name} (类型: {checkForCursor?.GetType().Name})"); 
-                
                 if (checkForCursor is Card)
                 {
-                    CardManager.CardBeingDragged = (Card)checkForCursor;
+                    Card draggedCard = (Card)checkForCursor;
+                    if (draggedCard.GetCheckEnemyCard())
+                    {
+                        return;
+                    }
+                    CardManager.CardBeingDragged = draggedCard;
                     Utils.Print(this,$"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
                 }
             }
