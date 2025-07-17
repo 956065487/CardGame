@@ -72,6 +72,11 @@ public partial class EnemyCard : Card
         _attackLabel.Text = $"{CardInfo.Attack}";
         _healthLabel.Text = $"{CardInfo.Hp}";
     }
-    
+
+    public override string ToString()
+    {
+        return CardInfo.ToString();
+    }
+
     #endregion
 }

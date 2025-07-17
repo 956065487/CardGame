@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using CardGame.script;
 using Godot.Collections;
 using Microsoft.VisualBasic.CompilerServices;
 using Array = System.Array;
@@ -16,6 +17,9 @@ public partial class BattleManager : Node2D
     private List<CardSlot> _enemyMonsterCardSlots = [];
     private List<CardSlot> _enemyMagicCardSlots = [];
     private Node2D _opponentCardSlots;
+    private EnemyHand _enemyHand;
+    private PlayerHand _playerHand;
+    private Deck _deck;
 
     #endregion
 
@@ -27,6 +31,8 @@ public partial class BattleManager : Node2D
         GetNodes(); // 获取所有需要的对象
         ConnectSignals(); // 连接信号
         InitEnemyCardSlots(); //初始化敌人卡槽
+        
+        
     }
 
     #endregion
@@ -70,6 +76,9 @@ public partial class BattleManager : Node2D
         _opponentDeck = GetNodeOrNull<OpponentDeck>("/root/Main/OpponentDeck");
         _battleTimer = GetNodeOrNull<Timer>("/root/Main/BattleTimer");
         _opponentCardSlots = GetNodeOrNull<Node2D>("/root/Main/OpponentCardSlots");
+        _enemyHand = GetNode<EnemyHand>("/root/Main/EnemyHand");
+        _playerHand = GetNode<PlayerHand>("/root/Main/PlayerHand");
+        _deck = GetNode<Deck>("/root/Main/Deck");
 
         if (_endButton == null)
         {
@@ -86,6 +95,17 @@ public partial class BattleManager : Node2D
         else if (_opponentCardSlots == null)
         {
             Utils.PrintErr(this, "获取不到 _opponentCardSlots Node2D节点");
+        }
+        else if (_enemyHand == null)
+        {
+            Utils.PrintErr(this, "获取不到_enemyHand 节点");   
+        }
+        else if (_playerHand == null)
+        {
+            Utils.PrintErr(this, "获取不到_playerHand节点");
+        } else if (_deck == null)
+        {
+            Utils.PrintErr(this, "获取不到_deck节点");
         }
     }
 
@@ -127,6 +147,41 @@ public partial class BattleManager : Node2D
         // 结束回合
         //重设玩家牌组，以重新抽牌。显示回合结束按钮，并启用
         Utils.Print(this, "计时器开始");
+        //禁用玩家操作
+        DisabledPlayer();
+
+    }
+
+    /**
+     * 禁用玩家
+     */
+    private void DisabledPlayer()
+    {
+        CollisionShape2D deckCollisionShape2D = _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
+        deckCollisionShape2D.Disabled = true;
+
+        List<Card> playerHandCards = _playerHand.GetPlayerHandCards();
+        foreach (Card playerHandCard in playerHandCards)
+        {
+            CollisionShape2D cardCollisionShape2D = playerHandCard.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
+            cardCollisionShape2D.Disabled = true;
+        }
+    }
+
+    /**
+     *启动玩家
+     */
+    private void EnablePlayer()
+    {
+        CollisionShape2D deckCollisionShape2D = _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
+        deckCollisionShape2D.Disabled = false;
+
+        List<Card> playerHandCards = _playerHand.GetPlayerHandCards();
+        foreach (Card playerHandCard in playerHandCards)
+        {
+            CollisionShape2D cardCollisionShape2D = playerHandCard.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
+            cardCollisionShape2D.Disabled = false;
+        }
     }
 
 
@@ -138,6 +193,9 @@ public partial class BattleManager : Node2D
         OpponentTurn();
     }
 
+    /**
+     * 回合结束按钮按下结束后
+     */
     private void OnBattleTimerTimeOut()
     {
         Utils.Print(this, "此时已经等待5秒");
@@ -147,6 +205,15 @@ public partial class BattleManager : Node2D
             EndOpponentTurn();
             return;
         }
+        // 计时结束
+        // TODO 测试用逻辑，后续需要修改
+        // EndOpponentTurn();
+        
+        
+        
+        
+        // 当所有敌人的操作操作完之后，敌人回合结束
+        
     }
 
 
@@ -157,6 +224,7 @@ public partial class BattleManager : Node2D
     {
         _endButton.Disabled = false;
         _endButton.Visible = true;
+        EnablePlayer(); // 启用玩家操作
     }
 
     #endregion

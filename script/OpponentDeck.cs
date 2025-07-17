@@ -85,9 +85,6 @@ public partial class OpponentDeck : Deck
 
     public void DrawEnemyCard()
     {
-        // TODO 待实现
-        Utils.PrintErr(this, "drawEnemyCard尚未实现");
-
         // 当牌堆没牌时
         if (_enemyDeckList.Count == 0)
         {

@@ -14,7 +14,7 @@ public partial class EnemyHand : Node2D
 
     // 变量
     private int _cardWidth; // 卡牌宽度，用于计算间隔等
-    private List<Card> _enemyHandCards = new List<Card>();
+    private List<EnemyCard> _enemyHandCards = new List<EnemyCard>();
     private float _centerScreenX;
     private float _centerScreenY;
 
@@ -41,7 +41,7 @@ public partial class EnemyHand : Node2D
     /**
      * 将卡片添加到手中
      */
-    public void AddToHand(Card card)
+    public void AddToHand(EnemyCard card)
     {
         if (card == null)
         {
@@ -112,13 +112,22 @@ public partial class EnemyHand : Node2D
     /**
      * 从手牌中移除卡片
      */
-    public void RemoveCardFromHand(Card card)
+    public void RemoveCardFromHand(EnemyCard card)
     {
         if (_enemyHandCards.Contains(card))
         {
             _enemyHandCards.Remove(card);
             UpdateHandPositions();
         }
+    }
+
+    /**
+     * 外部调用获取敌人卡牌列表
+     */
+
+    public List<EnemyCard> GetEnemyCards()
+    {
+        return _enemyHandCards;
     }
 
     #endregion

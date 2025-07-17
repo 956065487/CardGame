@@ -122,6 +122,11 @@ public partial class PlayerHand : Node2D
         }
     }
 
+    public List<Card> GetPlayerHandCards()
+    {
+        return _playerHandCards;
+    }
+
     #endregion
 
 
