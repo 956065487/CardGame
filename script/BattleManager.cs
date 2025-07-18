@@ -118,40 +118,23 @@ public partial class BattleManager : Node2D
         _endButton.Pressed += OnEndButtonPressed;
 
         //2、计时器
-        _battleTimer.Timeout += OnBattleTimerTimeOut;
+        // _battleTimer.Timeout += OnBattleTimerTimeOut;
     }
+
+
 
     /**
-     * 对手回合，在结束按钮按下时，触发
+     * 回合结束按钮按下
      */
-    private void OpponentTurn()
+    private void OnEndButtonPressed()
     {
-        _endButton.Disabled = true;
-        _endButton.Visible = false;
-        Utils.Print(this, "成功连接回合结束按下信号，按钮按下");
-
-        if (_opponentDeck != null)
-        {
-            _opponentDeck.DrawEnemyCard();
-        }
-        else
-        {
-            Utils.PrintErr(this, "空指针，对方卡组未实例化");
-        }
-
-        // 等待1秒，模拟AI思考出牌,到期后会通过信号到期调用OnBattleTimerTimeOut
-        _battleTimer.OneShot = true; // 标记为一次性
-        _battleTimer.WaitTime = 5.0;
-        _battleTimer.Start();
-
-        // 结束回合
-        //重设玩家牌组，以重新抽牌。显示回合结束按钮，并启用
-        Utils.Print(this, "计时器开始");
         //禁用玩家操作
         DisabledPlayer();
-
+        _endButton.Disabled = true;
+        _endButton.Visible = false;
+        WaitForEndTurnTimerTimeOut();
     }
-
+    
     /**
      * 禁用玩家
      */
@@ -183,44 +166,59 @@ public partial class BattleManager : Node2D
             cardCollisionShape2D.Disabled = false;
         }
     }
-
-
+    
     /**
-     * 回合结束按钮按下
+     * 等待信号结束
      */
-    private void OnEndButtonPressed()
+    private async void WaitForEndTurnTimerTimeOut()
     {
-        OpponentTurn();
+        _battleTimer.OneShot = true; // 标记为一次性
+        _battleTimer.WaitTime = 5.0;
+        _battleTimer.Start();
+        Utils.Print(this,"等待5秒开始");
+        await ToSignal(_battleTimer, "timeout");
+        EnemyTurn();
     }
-
+    
+    
     /**
-     * 回合结束按钮按下结束后
+     * 对手回合，在结束按钮按下时，触发
      */
-    private void OnBattleTimerTimeOut()
+    private void EnemyTurn()
     {
-        Utils.Print(this, "此时已经等待5秒");
+
+        Utils.Print(this, "5秒后 敌人行动");
 
         if (_enemyMonsterCardSlots.Count == 0)
         {
-            EndOpponentTurn();
+            EndEnemyTurn();
             return;
         }
-        // 计时结束
-        // TODO 测试用逻辑，后续需要修改
-        // EndOpponentTurn();
         
-        
-        
-        
-        // 当所有敌人的操作操作完之后，敌人回合结束
+        if (_opponentDeck != null)
+        {
+            // 给敌人发牌
+            _opponentDeck.DrawEnemyCard();
+        }
+        else
+        {
+            Utils.PrintErr(this, "空指针，对方卡组未实例化");
+        }
+
+        // 对手回合的后续逻辑
         
     }
+    
+    
 
+
+
+    
 
     /**
      * 敌人回合结束
      */
-    private void EndOpponentTurn()
+    private void EndEnemyTurn()
     {
         _endButton.Disabled = false;
         _endButton.Visible = true;
