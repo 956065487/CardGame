@@ -17,7 +17,7 @@ public partial class Deck : Node2D
 
 	private PlayerHand _playerHand;
 	
-	private bool _thisTurnDrawCard = false; // 本回合是否抽卡
+	public bool _thisTurnDrawCard = false; // 本回合是否抽卡
 
 	private int _startCardsNum = 3;
 		

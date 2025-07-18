@@ -72,7 +72,7 @@ public partial class EnemyHand : Node2D
     /**
      * 更新手牌位置
      */
-    private void UpdateHandPositions()
+    public void UpdateHandPositions()
     {
         for (int i = 0; i < _enemyHandCards.Count; i++)
         {
@@ -89,12 +89,31 @@ public partial class EnemyHand : Node2D
     }
 
     /**
-     * 动画移动卡牌位置
+     * 动画移动卡牌位置，默认不翻转
      */
-    private void AnimateCardToPosition(Card card, Vector2 newPosition)
+    public void AnimateCardToPosition(Card card, Vector2 newPosition)
     {
         var tween = GetTree().CreateTween();
         tween.TweenProperty(card, "position", newPosition, 1);
+    }
+    
+    /**
+     * 动画移动卡牌位置，changeCardDirection为true时，翻转
+     */
+    public void AnimateCardToPosition(Card card, Vector2 newPosition,bool changeCardDirection)
+    {
+        if (changeCardDirection)
+        {
+            // 播放动画并更新位置
+            AnimateCardToPosition(card, newPosition);
+            card.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
+            card.ZIndex = 2;
+        }
+        else
+        {
+            // 更新位置
+            AnimateCardToPosition(card, newPosition);
+        }
     }
 
 

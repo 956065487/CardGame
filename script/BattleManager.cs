@@ -18,6 +18,7 @@ public partial class BattleManager : Node2D
     private List<CardSlot> _enemyMagicCardSlots = [];
     private Node2D _opponentCardSlots;
     private EnemyHand _enemyHand;
+    private List<EnemyCard> _enemyCards;
     private PlayerHand _playerHand;
     private Deck _deck;
 
@@ -31,8 +32,6 @@ public partial class BattleManager : Node2D
         GetNodes(); // 获取所有需要的对象
         ConnectSignals(); // 连接信号
         InitEnemyCardSlots(); //初始化敌人卡槽
-        
-        
     }
 
     #endregion
@@ -80,6 +79,7 @@ public partial class BattleManager : Node2D
         _playerHand = GetNode<PlayerHand>("/root/Main/PlayerHand");
         _deck = GetNode<Deck>("/root/Main/Deck");
 
+
         if (_endButton == null)
         {
             Utils.PrintErr(this, "未能获取到回合结束按钮实例！");
@@ -98,12 +98,13 @@ public partial class BattleManager : Node2D
         }
         else if (_enemyHand == null)
         {
-            Utils.PrintErr(this, "获取不到_enemyHand 节点");   
+            Utils.PrintErr(this, "获取不到_enemyHand 节点");
         }
         else if (_playerHand == null)
         {
             Utils.PrintErr(this, "获取不到_playerHand节点");
-        } else if (_deck == null)
+        }
+        else if (_deck == null)
         {
             Utils.PrintErr(this, "获取不到_deck节点");
         }
@@ -122,7 +123,6 @@ public partial class BattleManager : Node2D
     }
 
 
-
     /**
      * 回合结束按钮按下
      */
@@ -134,19 +134,21 @@ public partial class BattleManager : Node2D
         _endButton.Visible = false;
         WaitForEndTurnTimerTimeOut();
     }
-    
+
     /**
      * 禁用玩家
      */
     private void DisabledPlayer()
     {
-        CollisionShape2D deckCollisionShape2D = _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
+        CollisionShape2D deckCollisionShape2D =
+            _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
         deckCollisionShape2D.Disabled = true;
 
         List<Card> playerHandCards = _playerHand.GetPlayerHandCards();
         foreach (Card playerHandCard in playerHandCards)
         {
-            CollisionShape2D cardCollisionShape2D = playerHandCard.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
+            CollisionShape2D cardCollisionShape2D =
+                playerHandCard.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
             cardCollisionShape2D.Disabled = true;
         }
     }
@@ -156,48 +158,30 @@ public partial class BattleManager : Node2D
      */
     private void EnablePlayer()
     {
-        CollisionShape2D deckCollisionShape2D = _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
+        CollisionShape2D deckCollisionShape2D =
+            _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
         deckCollisionShape2D.Disabled = false;
+        _deck._thisTurnDrawCard = false;
 
         List<Card> playerHandCards = _playerHand.GetPlayerHandCards();
         foreach (Card playerHandCard in playerHandCards)
         {
-            CollisionShape2D cardCollisionShape2D = playerHandCard.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
+            CollisionShape2D cardCollisionShape2D =
+                playerHandCard.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
             cardCollisionShape2D.Disabled = false;
         }
     }
-    
+
     /**
-     * 等待信号结束
+     * 等待信号结束，计时器3秒后结束，模拟AI思考。调用EnemyTurn，敌方回合
      */
     private async void WaitForEndTurnTimerTimeOut()
     {
-        _battleTimer.OneShot = true; // 标记为一次性
-        _battleTimer.WaitTime = 5.0;
-        _battleTimer.Start();
-        Utils.Print(this,"等待5秒开始");
-        await ToSignal(_battleTimer, "timeout");
-        EnemyTurn();
-    }
-    
-    
-    /**
-     * 对手回合，在结束按钮按下时，触发
-     */
-    private void EnemyTurn()
-    {
-
-        Utils.Print(this, "5秒后 敌人行动");
-
-        if (_enemyMonsterCardSlots.Count == 0)
-        {
-            EndEnemyTurn();
-            return;
-        }
-        
+        WaitTimerBySecond(3);
+        Utils.Print(this, "等待5秒开始");
+        // 给敌人发牌
         if (_opponentDeck != null)
         {
-            // 给敌人发牌
             _opponentDeck.DrawEnemyCard();
         }
         else
@@ -205,15 +189,52 @@ public partial class BattleManager : Node2D
             Utils.PrintErr(this, "空指针，对方卡组未实例化");
         }
 
-        // 对手回合的后续逻辑
-        
+        await ToSignal(_battleTimer, "timeout");
+        EnemyTurn();
     }
-    
-    
+
+    /**
+     * 按秒计时
+     */
+    private void WaitTimerBySecond(int second)
+    {
+        _battleTimer.OneShot = true; // 标记为一次性
+        _battleTimer.WaitTime = second;
+        _battleTimer.Start();
+    }
 
 
+    /**
+     * 在结束按钮按下3秒后触发，对手回合操作
+     */
+    private async void EnemyTurn()
+    {
+        Utils.Print(this, "3秒后 敌人行动");
 
-    
+        if (_enemyMonsterCardSlots.Count == 0)
+        {
+            EndEnemyTurn();
+            return;
+        }
+
+        List<EnemyCard> enemyCards = _enemyHand.GetEnemyCards();
+
+        // 对手回合的后续逻辑
+        // 将卡牌移动到目标卡槽上
+        int randomCardSlot = GD.RandRange(0, _enemyMonsterCardSlots.Count-1);
+        int randomCard = GD.RandRange(0, enemyCards.Count-1);
+        EnemyCard usingCard = enemyCards[randomCard];
+        CardSlot usingCardSlot = _enemyMonsterCardSlots[randomCardSlot];
+        _enemyHand.AnimateCardToPosition(usingCard,usingCardSlot.GlobalPosition,true);
+        _enemyHand.RemoveCardFromHand(usingCard);
+        _enemyMonsterCardSlots.Remove(usingCardSlot);
+        _enemyHand.UpdateHandPositions();
+        
+        WaitTimerBySecond(5);   // 5秒后玩家可操作
+        await ToSignal(_battleTimer, "timeout");
+        EndEnemyTurn();
+    }
+
 
     /**
      * 敌人回合结束
