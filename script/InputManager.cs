@@ -11,6 +11,7 @@ public partial class InputManager : Node2D
     public CardManager CardManager;
     public Deck Deck;
     public CardSlot CardSlot;
+    private BattleManager _battleManager;
 
     [Signal]
     public delegate void LeftMouseClickedEventHandler();
@@ -24,8 +25,28 @@ public partial class InputManager : Node2D
 
     public override void _Ready()
     {
+        GetNodes();
+    }
+
+    private void GetNodes()
+    {
         CardManager = GetNode<CardManager>("/root/Main/CardManager");
         Deck = GetNode<Deck>("/root/Main/Deck");
+        _battleManager = GetNode<BattleManager>("/root/Main/BattleManager");
+
+
+        if (CardManager == null)
+        {
+            Utils.PrintErr(this,$"CardManager 没有获取到节点");
+        }
+        else if (Deck == null)
+        {
+            Utils.PrintErr(this,$"Deck 没有获取到节点");
+        } 
+        else if (_battleManager == null)
+        {
+            Utils.PrintErr(this,$"BattleManager 没有获取到节点");
+        }
     }
 
     public override void _Input(InputEvent @event)
@@ -199,6 +220,7 @@ public partial class InputManager : Node2D
             CardManager.CardBeingDragged.Position = bestCardSlot.Position;
             bestCardSlot.CardInSlot = true; // 标记卡槽被占用
             CardManager.PlayerHandNode2d.RemoveCardFromHand(CardManager.CardBeingDragged);
+            _battleManager.AddToPlayerBattleCards(CardManager.CardBeingDragged);
             // 无论吸附成功与否，都要重新启用卡牌的碰撞体
             CollisionShape2D cardCollisionShape = CardManager.CardBeingDragged
                 .GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");

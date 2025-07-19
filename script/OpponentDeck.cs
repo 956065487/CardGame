@@ -35,6 +35,7 @@ public partial class OpponentDeck : Deck
     }
 
 
+    #endregion
     #region 自定义方法
 
     /**
@@ -80,7 +81,7 @@ public partial class OpponentDeck : Deck
         _opponentArea2D.Monitoring = false; //检测进入和退出
     }
 
-    #endregion
+
 
 
     public void DrawEnemyCard()
@@ -117,6 +118,6 @@ public partial class OpponentDeck : Deck
         // 播放翻转动画，敌方卡牌不翻转
         // newCard.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
     }
-
+    
     #endregion
 }

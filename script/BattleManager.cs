@@ -12,15 +12,17 @@ public partial class BattleManager : Node2D
     #region 属性，变量
 
     private TextureButton _endButton; //回合结束按钮
-    private OpponentDeck _opponentDeck;
-    private Timer _battleTimer;
-    private List<CardSlot> _enemyMonsterCardSlots = [];
-    private List<CardSlot> _enemyMagicCardSlots = [];
-    private Node2D _opponentCardSlots;
-    private EnemyHand _enemyHand;
-    private List<EnemyCard> _enemyCards;
-    private PlayerHand _playerHand;
-    private Deck _deck;
+    private OpponentDeck _opponentDeck; //敌方牌堆
+    private Timer _battleTimer; //计时器
+    private List<CardSlot> _enemyMonsterCardSlots = []; //敌人怪物卡槽列表
+    private List<CardSlot> _enemyMagicCardSlots = [];   //敌人魔法卡槽列表
+    private Node2D _opponentCardSlots;  //对手卡槽父节点
+    private EnemyHand _enemyHand;   //敌方手牌
+    private List<EnemyCard> _enemyCards;    //敌人卡牌列表
+    private PlayerHand _playerHand; //玩家手牌
+    private Deck _deck; //玩家牌堆
+    private List<Card> _playerBattleCards = new List<Card>();
+    private List<EnemyCard> _enemyBattleCards = new List<EnemyCard>();
 
     #endregion
 
@@ -39,6 +41,14 @@ public partial class BattleManager : Node2D
 
     #region 自定义方法、信号
 
+    /**
+     *  添加卡牌到玩家战场卡牌列表中
+     */
+    public void AddToPlayerBattleCards(Card card)
+    {
+        this._playerBattleCards.Add(card);
+    }
+    
     /**
      * 初始化敌人卡槽
      * _enemyMonsterCardSlots
@@ -178,7 +188,7 @@ public partial class BattleManager : Node2D
     private async void WaitForEndTurnTimerTimeOut()
     {
         WaitTimerBySecond(3);
-        Utils.Print(this, "等待5秒开始");
+        Utils.Print(this, "等待3秒开始");
         // 给敌人发牌
         if (_opponentDeck != null)
         {
@@ -221,18 +231,67 @@ public partial class BattleManager : Node2D
 
         // 对手回合的后续逻辑
         // 将卡牌移动到目标卡槽上
+        // 并存储卡牌到List中
         int randomCardSlot = GD.RandRange(0, _enemyMonsterCardSlots.Count-1);
         int randomCard = GD.RandRange(0, enemyCards.Count-1);
         EnemyCard usingCard = enemyCards[randomCard];
         CardSlot usingCardSlot = _enemyMonsterCardSlots[randomCardSlot];
         _enemyHand.AnimateCardToPosition(usingCard,usingCardSlot.GlobalPosition,true);
+        _enemyBattleCards.Add(usingCard);
         _enemyHand.RemoveCardFromHand(usingCard);
         _enemyMonsterCardSlots.Remove(usingCardSlot);
         _enemyHand.UpdateHandPositions();
         
-        WaitTimerBySecond(5);   // 5秒后玩家可操作
+        // 5秒后玩家可操作
+        WaitTimerBySecond(5);   
         await ToSignal(_battleTimer, "timeout");
+        
+        // 人机尝试操作
+        TryPlayCardWithHighestAttack();
+        
         EndEnemyTurn();
+    }
+
+    /**
+     * 人机尝试攻击
+     */
+    private async void TryPlayCardWithHighestAttack()
+    {
+        if (_playerBattleCards.Count == 0)
+        {
+            //此时玩家场上没有怪物，直接攻击玩家，扣除玩家血量
+            return;
+        }
+
+        
+        foreach (var enemyCard in _enemyBattleCards)
+        {
+            int randomPlayerCard = GD.RandRange(0, _playerBattleCards.Count-1);
+            DirectAttack(_playerBattleCards[randomPlayerCard],enemyCard);
+        }
+        
+        // 需要一个判断攻击结束的信号
+        // await ToSignal()
+        var enemyBattleCardsCopy = _enemyBattleCards;
+        for (var i = 0; i < enemyBattleCardsCopy.Count; i++)
+        {
+            
+        }
+    }
+
+    /**
+     * 直接攻击
+     */
+    private void DirectAttack(Card attackingCard,Card attackerCard)
+    {
+        Utils.Print(this, "directAttack");
+        var tween = GetTree().CreateTween();
+        var OldPosition= attackerCard.GlobalPosition;
+        attackingCard.ZIndex = attackerCard.ZIndex + 1;
+        tween.TweenProperty(attackerCard, "position", attackingCard.GlobalPosition,0.8);
+        
+        tween.TweenProperty(attackerCard, "position", OldPosition,2);
+        attackingCard.ZIndex = attackerCard.ZIndex - 1;
     }
 
 
