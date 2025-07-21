@@ -89,7 +89,7 @@ public partial class Deck : Node2D
 		
 		CardInfo cardInfo = CardDataLoader.GetCardInfo(cardDraw);
 		newCard.CardInfo = cardInfo;
-		newCard.UpdateCardInfo();
+		newCard.UpdateCardInfoToLabel();
 		
 		_playerHand.AddToHand(newCard);
 		// 播放翻转动画

@@ -230,8 +230,6 @@ public partial class BattleManager : Node2D
      */
     private async void WaitForEndTurnTimerTimeOut()
     {
-        WaitTimerBySecond(3);
-        Utils.Print(this, "等待3秒开始");
         // 给敌人发牌
         if (_opponentDeck != null)
         {
@@ -242,6 +240,8 @@ public partial class BattleManager : Node2D
             Utils.PrintErr(this, "空指针，对方卡组未实例化");
         }
 
+        WaitTimerBySecond(3);
+        Utils.Print(this, "等待3秒开始");
         await ToSignal(_battleTimer, "timeout");
         EnemyTurn();
     }
@@ -274,9 +274,7 @@ public partial class BattleManager : Node2D
         {
             Utils.PrintErr(this, "EnemyTurn:未能获取到_enemyCards");
         }
-
         
-
         // 对手回合的后续逻辑
         // 将卡牌移动到目标卡槽上
         // 并存储卡牌到List中
@@ -289,8 +287,7 @@ public partial class BattleManager : Node2D
         _enemyHand.RemoveCardFromHand(usingCard);
         _enemyMonsterCardSlots.Remove(usingCardSlot);
         _enemyHand.UpdateHandPositions();
-
-        // 5秒后玩家可操作
+        
         WaitTimerBySecond(5);
         await ToSignal(_battleTimer, "timeout");
 
@@ -339,11 +336,38 @@ public partial class BattleManager : Node2D
         Utils.Print(this, "Attack");
         var tween = GetTree().CreateTween();
         var OldPosition = attackerCard.GlobalPosition;
-        attackingCard.ZIndex = attackerCard.ZIndex + 1;
+        attackerCard.ZIndex = 5;
+        attackingCard.ZIndex = 4;
         tween.TweenProperty(attackerCard, "position", attackingCard.GlobalPosition, 0.8);
         tween.TweenProperty(attackerCard, "position", OldPosition, 2);
         await ToSignal(tween, "finished");
-        attackingCard.ZIndex = attackerCard.ZIndex - 1;
+        attackingCard.ZIndex = 2;
+        attackerCard.ZIndex = 2;
+        
+        // 更新卡牌受到攻击后的新的生命值
+        attackerCard.CardInfo.Hp = Math.Max(0, attackerCard.CardInfo.Hp - attackingCard.CardInfo.Attack);
+        attackingCard.CardInfo.Hp = Math.Max(0, attackingCard.CardInfo.Hp - attackerCard.CardInfo.Attack);
+        
+        attackerCard.UpdateCardInfoToLabel();
+        attackingCard.UpdateCardInfoToLabel();
+
+        // TODO BUG待修复
+        // 死亡后结算到墓地不正常
+        // BUG1:死亡结算到墓地后，玩家血量为0的不能正常到墓地。
+        // BUG2:敌方血量为0的在墓地还能正常攻击
+        if (attackingCard.CardInfo.Hp <= 0)
+        {
+            // 玩家墓地deck Y - 300
+            Vector2 playerDeadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
+            attackerCard.AnimateCardToPosition(playerDeadCardPosition);
+        }
+        
+        if (attackerCard.CardInfo.Hp <= 0)
+        {
+            // 电脑墓地 Y + 300
+            Vector2 enemyDeadCardPosition = new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
+            attackerCard.AnimateCardToPosition(enemyDeadCardPosition);
+        }
     }
 
     private async void DirectAttack(Card attackerCard)

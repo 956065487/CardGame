@@ -18,8 +18,8 @@ public partial class Card : Node2D
 
     public Vector2 PositionInHand { set; get; }
     public CardInfo CardInfo { set; get; }
-    private RichTextLabel _attackLabel;
-    private RichTextLabel _healthLabel;
+    public RichTextLabel AttackLabel;
+    public RichTextLabel HealthLabel;
     protected bool CheckEnemyCard;
     public bool PositionInCardSlot {set; get;}
 
@@ -46,9 +46,7 @@ public partial class Card : Node2D
 
         SetPosition(deck.GlobalPosition);
 
-        // 更新卡牌标签
-        _attackLabel = GetNodeOrNull<RichTextLabel>("Attack");
-        _healthLabel = GetNodeOrNull<RichTextLabel>("Health");
+
         // 连接Area2D节点的OnMouseEnter信号
         Area2D cardArea2D = GetNode<Area2D>("Area2D");
         if (cardArea2D != null)
@@ -91,7 +89,7 @@ public partial class Card : Node2D
 
     #endregion
 
-    #region 信号相关的方法
+    #region 自定义的方法
 
     /**
      * 鼠标进入后，发射悬停信号
@@ -115,10 +113,13 @@ public partial class Card : Node2D
      * 例如，生命值，攻击力，名字以及描述
      * 目前只更新生命值和攻击力
      */
-    public void UpdateCardInfo()
+    public void UpdateCardInfoToLabel()
     {
-        _attackLabel.Text = $"{CardInfo.Attack}";
-        _healthLabel.Text = $"{CardInfo.Hp}";
+        // 更新卡牌标签
+        AttackLabel = GetNodeOrNull<RichTextLabel>("Attack");
+        HealthLabel = GetNodeOrNull<RichTextLabel>("Health");
+        AttackLabel.Text = $"{CardInfo.Attack}";
+        HealthLabel.Text = $"{CardInfo.Hp}";
     }
 
     public bool GetCheckEnemyCard()
@@ -129,6 +130,27 @@ public partial class Card : Node2D
     public CardInfo GetCardInfo()
     {
         return CardInfo;
+    }
+    
+    /**
+     * 平移动画更新卡牌位置
+     */
+    public void AnimateCardToPosition(Vector2 newPosition)
+    { 
+        var tween = GetTree().CreateTween();
+        tween.TweenProperty(this, "position", newPosition,1);
+
+    }
+    
+    /**
+     * 平移动画更新卡牌位置
+     * duration：速度
+     */
+    public void AnimateCardToPosition(Vector2 newPosition,int duration)
+    { 
+        var tween = GetTree().CreateTween();
+        tween.TweenProperty(this, "position", newPosition,duration);
+
     }
 
     #endregion
