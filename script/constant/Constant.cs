@@ -18,4 +18,7 @@ public static class Constant
     public const float CARD_HIGH_LIGHT_SIZE = 1f;
     
     private const int CARD_WIDTH = 200;
+
+    // 生命值设置
+    public const int STARTING_HP = 30;
 }

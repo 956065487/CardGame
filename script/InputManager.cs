@@ -12,6 +12,7 @@ public partial class InputManager : Node2D
     public Deck Deck;
     public CardSlot CardSlot;
     private BattleManager _battleManager;
+    private Vector2 _positionOnMouseClick;
 
     [Signal]
     public delegate void LeftMouseClickedEventHandler();
@@ -55,11 +56,10 @@ public partial class InputManager : Node2D
         {
             if (mouseEvent.Pressed)
             {
+                // 发射信号
+                //检查卡牌拖动等逻辑
                 EmitSignalLeftMouseClicked();
-                // 
                 Node2D checkForCursor = CheckForCursor();
-                // 调试用
-                // GD.Print($"InputManager._Input (鼠标按下): CheckForCursor 返回: {checkForCursor?.Name} (类型: {checkForCursor?.GetType().Name})"); 
                 if (checkForCursor is Card)
                 {
                     Card draggedCard = (Card)checkForCursor;
@@ -67,9 +67,15 @@ public partial class InputManager : Node2D
                     {
                         return;
                     }
+                    
                     CardManager.CardBeingDragged = draggedCard;
-                    Utils.Print(this,$"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
+                    // Utils.Print(this,$"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
                 }
+                
+                // 获取点击的鼠标的位置
+                _positionOnMouseClick = mouseEvent.Position;
+                
+                // 
             }
             else
             {
@@ -82,7 +88,7 @@ public partial class InputManager : Node2D
     #endregion
 
     #region 自定义方法
-
+    
     /**
      * 获取光标下的东西
      * 如果不为 Card 对象，返回Null
@@ -121,7 +127,7 @@ public partial class InputManager : Node2D
             }
             else if (resultCollisionLayer == Constant.LAYER_DECK)
             {
-                Deck.DrawCard();    // 生成卡牌
+                // Deck.DrawCard();    // 生成卡牌，现在改为不用手动抽牌，自动发牌
             }
             else if (resultCollisionLayer == Constant.LAYER_SLOT)
             {
@@ -129,7 +135,7 @@ public partial class InputManager : Node2D
                 if (colliderObject.GetParent() is CardSlot)
                 {
                     CardSlot cardSlot = colliderObject.GetParent() as CardSlot;
-                    Utils.Print(cardSlot,$"这里是卡槽,卡槽类型是 : {cardSlot.CardSlotType}");
+                    // Utils.Print(cardSlot,$"这里是卡槽,卡槽类型是 : {cardSlot.CardSlotType}");
                     return colliderObject.GetParent() as CardSlot;
                 }
                 
@@ -179,11 +185,11 @@ public partial class InputManager : Node2D
         CardSlot bestCardSlot = null;   // 储存最优卡槽
         float maxOverlap = 0.0f;        //储存最大重叠面积
         
-        Utils.Print(this,$"检测到{overlappingAreas.Count}个重叠区域");
+        //Utils.Print(this,$"检测到{overlappingAreas.Count}个重叠区域");
 
         foreach (Area2D overlappingArea in overlappingAreas)
         {
-            Utils.Print(this,$"重叠区域: {overlappingArea.Name} (类型: {overlappingArea.GetType().Name})");
+            // Utils.Print(this,$"重叠区域: {overlappingArea.Name} (类型: {overlappingArea.GetType().Name})");
             
             if (overlappingArea.GetParent() is CardSlot currentCardSlot && !currentCardSlot.CardInSlot)
             {
@@ -193,7 +199,7 @@ public partial class InputManager : Node2D
                     continue;
                 }
                 // 重叠区域为卡槽，并且卡槽为空
-                Utils.Print(this,$"找到一个空卡槽！{currentCardSlot.Name}");
+                // Utils.Print(this,$"找到一个空卡槽！{currentCardSlot.Name}");
 
                 // 获取卡牌矩形全局矩形
                 Rect2 cardRect2 = CardManager.CardBeingDragged.GetViewportRect();
@@ -219,6 +225,7 @@ public partial class InputManager : Node2D
         {
             CardManager.CardBeingDragged.Position = bestCardSlot.Position;
             bestCardSlot.CardInSlot = true; // 标记卡槽被占用
+            CardManager.CardBeingDragged.PositionInCardSlot = true; // 标记卡牌在卡槽中
             CardManager.PlayerHandNode2d.RemoveCardFromHand(CardManager.CardBeingDragged);
             _battleManager.AddToPlayerBattleCards(CardManager.CardBeingDragged);
             // 无论吸附成功与否，都要重新启用卡牌的碰撞体

@@ -21,6 +21,7 @@ public partial class Card : Node2D
     private RichTextLabel _attackLabel;
     private RichTextLabel _healthLabel;
     protected bool CheckEnemyCard;
+    public bool PositionInCardSlot {set; get;}
 
     #endregion
 
@@ -123,6 +124,11 @@ public partial class Card : Node2D
     public bool GetCheckEnemyCard()
     {
         return CheckEnemyCard;
+    }
+
+    public CardInfo GetCardInfo()
+    {
+        return CardInfo;
     }
 
     #endregion

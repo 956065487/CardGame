@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=4 uid="uid://blgcvsw5expnj"]
+[gd_scene load_steps=24 format=4 uid="uid://blgcvsw5expnj"]
 
 [ext_resource type="Script" uid="uid://ej2mrtdh58b3" path="res://script/CardManager.cs" id="1_h6nst"]
 [ext_resource type="Script" uid="uid://yn4b5vupq8lk" path="res://script/EnemyHand.cs" id="3_aex65"]
@@ -13,6 +13,8 @@
 [ext_resource type="Script" uid="uid://ddrsueaupp4mn" path="res://script/cardSlots/Impl/EnemyCardSlot.cs" id="9_x4yfu"]
 [ext_resource type="Texture2D" uid="uid://d3h1n4ykbdgsq" path="res://asset/EndButton.png" id="11_x4yfu"]
 [ext_resource type="Script" uid="uid://bu7nhp6ib5dkk" path="res://script/BattleManager.cs" id="13_hrl0l"]
+[ext_resource type="Texture2D" uid="uid://b1btqrsbgp4mu" path="res://asset/PlayerAndEnemy/playerImg.png" id="14_tuai4"]
+[ext_resource type="Texture2D" uid="uid://dfv55e4qokx6n" path="res://asset/PlayerAndEnemy/enemyImg.png" id="15_ob58h"]
 
 [sub_resource type="Image" id="Image_x4yfu"]
 data = {
@@ -1116,3 +1118,29 @@ texture_normal = ExtResource("11_x4yfu")
 script = ExtResource("13_hrl0l")
 
 [node name="BattleTimer" type="Timer" parent="."]
+
+[node name="EnemyHp" type="RichTextLabel" parent="."]
+offset_left = 1246.0
+offset_top = 704.0
+offset_right = 1508.0
+offset_bottom = 780.0
+theme_override_font_sizes/normal_font_size = 40
+text = "0"
+fit_content = true
+
+[node name="PlayerHp" type="RichTextLabel" parent="."]
+offset_left = 1247.0
+offset_top = 352.0
+offset_right = 1506.0
+offset_bottom = 423.0
+theme_override_font_sizes/normal_font_size = 40
+text = "0"
+fit_content = true
+
+[node name="PlayerImg" type="Sprite2D" parent="."]
+position = Vector2(1317, 622)
+texture = ExtResource("14_tuai4")
+
+[node name="EnemyImg" type="Sprite2D" parent="."]
+position = Vector2(1324, 264)
+texture = ExtResource("15_ob58h")

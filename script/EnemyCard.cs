@@ -10,8 +10,8 @@ public partial class EnemyCard : Card
 {
     #region 信号、属性
     
-    public Vector2 PositionInHand {set; get;}
-    public CardInfo CardInfo {set; get;}
+    // public new Vector2 PositionInHand {set; get;}
+    // public CardInfo CardInfo {set; get;}
     private RichTextLabel _attackLabel;
     private RichTextLabel _healthLabel;
     private OpponentDeck _opponentDeck;
@@ -63,7 +63,7 @@ public partial class EnemyCard : Card
     #region 自定义方法
 
     /**
-     * 将卡牌信息展示到实例上
+     * 将卡牌信息展示到实例上，并初始化CardInfo
      * 例如，生命值，攻击力，名字以及描述
      * 目前只更新生命值和攻击力
      */

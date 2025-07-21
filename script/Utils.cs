@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Godot;
 
 namespace CardGame.script;
@@ -11,7 +12,12 @@ public static class Utils
      */
     public static void PrintErr(Node node,string msg)
     {
-        GD.PrintErr("[" + node.GetType().Name + "]" + node.GetName() + " 错误: " + msg);
+        var stackTrace = new StackTrace();
+        var callingMethod = stackTrace.GetFrame(1).GetMethod();
+        // 获取类名和方法名
+        String callingMethodInfo = $"{callingMethod.DeclaringType.Name}.{callingMethod.Name}";
+        
+        GD.PrintErr("[" + node.GetType().Name + "]" + node.GetName() + " 错误: " + msg + $"            ------调用自{callingMethodInfo}------");
     }
     
     /**
@@ -35,7 +41,12 @@ public static class Utils
      */
     public static void Print(Node node,string msg)
     {
-        GD.Print("[" + node.GetType().Name + "]" + node.GetName() + " : " + msg);
+        var stackTrace = new StackTrace();
+        var callingMethod = stackTrace.GetFrame(1).GetMethod();
+        // 获取类名和方法名
+        String callingMethodInfo = $"{callingMethod.DeclaringType.Name}.{callingMethod.Name}";
+        GD.Print("[" + node.GetType().Name + "]" + node.GetName() + " : " + msg + $"            ------调用自{callingMethodInfo}------");
     }
+    
     
 }

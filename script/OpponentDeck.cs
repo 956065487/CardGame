@@ -113,6 +113,7 @@ public partial class OpponentDeck : Deck
         CardInfo cardInfo = CardDataLoader.GetCardInfo(cardDraw);
         newCard.CardInfo = cardInfo;
         newCard.UpdateCardInfo();
+        // Utils.Print(this,$"创建时，卡牌的信息是{newCard.CardInfo}");
 
         _enemyHand.AddToHand(newCard);
         // 播放翻转动画，敌方卡牌不翻转

@@ -35,6 +35,9 @@ public partial class CardManager : Node2D
         
     }
 
+    /**
+     * 实现了鼠标拖动卡牌，让卡牌跟手
+     */
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
