@@ -225,6 +225,7 @@ public partial class InputManager : Node2D
         {
             CardManager.CardBeingDragged.Position = bestCardSlot.Position;
             bestCardSlot.CardInSlot = true; // 标记卡槽被占用
+            CardManager.CardBeingDragged.SetCardSlot(bestCardSlot);
             CardManager.CardBeingDragged.PositionInCardSlot = true; // 标记卡牌在卡槽中
             CardManager.PlayerHandNode2d.RemoveCardFromHand(CardManager.CardBeingDragged);
             _battleManager.AddToPlayerBattleCards(CardManager.CardBeingDragged);

@@ -22,6 +22,8 @@ public partial class Card : Node2D
     public RichTextLabel HealthLabel;
     protected bool CheckEnemyCard;
     public bool PositionInCardSlot {set; get;}
+    
+    private CardSlot _usingCardSlot;
 
     #endregion
 
@@ -151,6 +153,22 @@ public partial class Card : Node2D
         var tween = GetTree().CreateTween();
         tween.TweenProperty(this, "position", newPosition,duration);
 
+    }
+
+    /**
+     * 设置占用的卡槽
+     */
+    public void SetCardSlot(CardSlot cardSlot)
+    {
+        this._usingCardSlot = cardSlot;
+    }
+
+    /**
+     * 获得占用的卡槽
+     */
+    public CardSlot GetCardSlot()
+    {
+        return _usingCardSlot;
     }
 
     #endregion

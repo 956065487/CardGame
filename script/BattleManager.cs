@@ -1,6 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CardGame.script;
 using CardGame.script.constant;
 using CardGame.script.pojo;
@@ -280,9 +282,16 @@ public partial class BattleManager : Node2D
         // 并存储卡牌到List中
         int randomCardSlot = GD.RandRange(0, _enemyMonsterCardSlots.Count - 1);
         int randomCard = GD.RandRange(0, _enemyCards.Count - 1);
+        // TODO BUG待修复
+        // System.ArgumentOutOfRangeException: Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')
+        // at System.Collections.Generic.List`1.get_Item(Int32 index)
+        // at BattleManager.EnemyTurn() in D:\Developer\GameProject\cardgame\script\BattleManager.cs:line 285
+        // at System.Threading.Tasks.Task.<>c.<ThrowAsync>b__128_0(Object state)
+
         EnemyCard usingCard = _enemyCards[randomCard];
         CardSlot usingCardSlot = _enemyMonsterCardSlots[randomCardSlot];
         _enemyHand.AnimateCardToPosition(usingCard, usingCardSlot.GlobalPosition, true);
+        usingCard.SetCardSlot(usingCardSlot);
         _enemyBattleCards.Add(usingCard);
         _enemyHand.RemoveCardFromHand(usingCard);
         _enemyMonsterCardSlots.Remove(usingCardSlot);
@@ -292,46 +301,39 @@ public partial class BattleManager : Node2D
         await ToSignal(_battleTimer, "timeout");
 
         // 人机尝试操作
-        TryPlayCardWithRandomAttack();
-
-        await ToSignal(this, "BattleFinished");
+        await TryPlayCardWithRandomAttack();
+        
         EndEnemyTurn();
     }
 
     /**
      * 人机尝试使用随机攻击力的卡牌
      */
-    private async void TryPlayCardWithRandomAttack()
+    private async Task TryPlayCardWithRandomAttack()
     {
-        foreach (var enemyCard in _enemyBattleCards)
+        List<EnemyCard> enemyBattleCardsCopy = _enemyBattleCards.ToList();
+        foreach (var enemyCard in enemyBattleCardsCopy)
         {
             if (_playerBattleCards.Count == 0)
             {
                 //此时玩家场上没有怪物，直接攻击玩家，扣除玩家血量
-                DirectAttack(enemyCard);
-                WaitTimerBySecond(3);
-                await ToSignal(_battleTimer, "timeout");
+                await DirectAttack(enemyCard);
                 continue;
             }
 
             int randomPlayerCard = GD.RandRange(0, _playerBattleCards.Count - 1);
-            Attack(enemyCard, _playerBattleCards[randomPlayerCard]);
+            await Attack(enemyCard, _playerBattleCards[randomPlayerCard]);
             WaitTimerBySecond(3);
             await ToSignal(_battleTimer, "timeout");
             Utils.Print("操作中");
         }
-
-        Utils.Print(this, "Battle Finished emit");
-        // 提交战斗结束信号
-        EmitSignalBattleFinished();
-        // EndEnemyTurn();
     }
 
     /**
      * attackerCard ：攻击的卡牌
      * attackingCard ： 被攻击的卡牌
      */
-    private async void Attack(Card attackerCard, Card attackingCard)
+    private async Task Attack(Card attackerCard, Card attackingCard)
     {
         Utils.Print(this, "Attack");
         var tween = GetTree().CreateTween();
@@ -350,27 +352,56 @@ public partial class BattleManager : Node2D
         
         attackerCard.UpdateCardInfoToLabel();
         attackingCard.UpdateCardInfoToLabel();
-
-        // TODO BUG待修复
-        // 死亡后结算到墓地不正常
-        // BUG1:死亡结算到墓地后，玩家血量为0的不能正常到墓地。
-        // BUG2:敌方血量为0的在墓地还能正常攻击
+        
+        // 死亡结算
         if (attackingCard.CardInfo.Hp <= 0)
-        {
-            // 玩家墓地deck Y - 300
-            Vector2 playerDeadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
-            attackerCard.AnimateCardToPosition(playerDeadCardPosition);
+        {   
+            // 被攻击方代码逻辑
+            if (attackingCard is EnemyCard)
+            {
+                // 如果是敌人卡牌
+                Vector2 deadCardPosition = new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
+                attackingCard.AnimateCardToPosition(deadCardPosition);
+                _enemyBattleCards.Remove(attackingCard as EnemyCard);
+                _enemyMonsterCardSlots.Add(attackerCard.GetCardSlot());
+            }
+            else
+            {
+                // 玩家卡牌     墓地deck Y - 300
+                Vector2 deadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
+                attackingCard.AnimateCardToPosition(deadCardPosition);
+                _playerBattleCards.Remove(attackingCard);
+                CardSlot cardSlot = attackingCard.GetCardSlot();
+                cardSlot.CardInSlot = false;
+            }
         }
         
         if (attackerCard.CardInfo.Hp <= 0)
         {
+            //攻击方逻辑
             // 电脑墓地 Y + 300
-            Vector2 enemyDeadCardPosition = new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
-            attackerCard.AnimateCardToPosition(enemyDeadCardPosition);
+            if (attackerCard is EnemyCard)
+            {
+                // 如果是敌人卡牌
+                Vector2 deadCardPosition = new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
+                attackerCard.AnimateCardToPosition(deadCardPosition);
+                _enemyBattleCards.Remove(attackerCard as EnemyCard);
+                _enemyMonsterCardSlots.Add(attackerCard.GetCardSlot());
+            }
+            else
+            {
+                // 玩家卡牌
+                Vector2 deadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
+                attackerCard.AnimateCardToPosition(deadCardPosition);
+                _playerBattleCards.Remove(attackerCard);
+                CardSlot cardSlot = attackerCard.GetCardSlot();
+                cardSlot.CardInSlot = false;
+            }
+            
         }
     }
 
-    private async void DirectAttack(Card attackerCard)
+    private async Task DirectAttack(Card attackerCard)
     {
         // 每个分支需要播放攻击动画
         if (attackerCard is EnemyCard)
