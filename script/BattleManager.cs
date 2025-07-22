@@ -255,6 +255,8 @@ public partial class BattleManager : Node2D
     {
         _battleTimer.OneShot = true; // 标记为一次性
         _battleTimer.WaitTime = second;
+        //  Utils.Print(this, "启用TEST模式，计时器为1秒！");
+        //  _battleTimer.WaitTime = 1;
         _battleTimer.Start();
     }
 
@@ -282,20 +284,21 @@ public partial class BattleManager : Node2D
         // 并存储卡牌到List中
         int randomCardSlot = GD.RandRange(0, _enemyMonsterCardSlots.Count - 1);
         int randomCard = GD.RandRange(0, _enemyCards.Count - 1);
-        // TODO BUG待修复
-        // System.ArgumentOutOfRangeException: Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')
-        // at System.Collections.Generic.List`1.get_Item(Int32 index)
-        // at BattleManager.EnemyTurn() in D:\Developer\GameProject\cardgame\script\BattleManager.cs:line 285
-        // at System.Threading.Tasks.Task.<>c.<ThrowAsync>b__128_0(Object state)
-
-        EnemyCard usingCard = _enemyCards[randomCard];
-        CardSlot usingCardSlot = _enemyMonsterCardSlots[randomCardSlot];
-        _enemyHand.AnimateCardToPosition(usingCard, usingCardSlot.GlobalPosition, true);
-        usingCard.SetCardSlot(usingCardSlot);
-        _enemyBattleCards.Add(usingCard);
-        _enemyHand.RemoveCardFromHand(usingCard);
-        _enemyMonsterCardSlots.Remove(usingCardSlot);
-        _enemyHand.UpdateHandPositions();
+        if (_enemyCards.Count != 0)
+        {
+            EnemyCard usingCard = _enemyCards[randomCard];
+            if (_enemyMonsterCardSlots.Count != 0)
+            {
+                CardSlot usingCardSlot = _enemyMonsterCardSlots[randomCardSlot];
+                _enemyHand.AnimateCardToPosition(usingCard, usingCardSlot.GlobalPosition, true);
+                usingCard.SetCardSlot(usingCardSlot);
+                _enemyBattleCards.Add(usingCard);
+                _enemyHand.RemoveCardFromHand(usingCard);
+                _enemyMonsterCardSlots.Remove(usingCardSlot);
+                _enemyHand.UpdateHandPositions();
+            }
+        }
+        
         
         WaitTimerBySecond(5);
         await ToSignal(_battleTimer, "timeout");
