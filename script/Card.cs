@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Godot;
 using CardGame.script.constant;
 using CardGame.script.pojo;
@@ -15,6 +16,9 @@ public partial class Card : Node2D
 
     [Signal]
     public delegate void HoverOffEventHandler(Card card);
+    
+    [Signal]
+    public delegate void MouseClickedEventHandler();    // 鼠标点击
 
     public Vector2 PositionInHand { set; get; }
     public CardInfo CardInfo { set; get; }
@@ -24,6 +28,8 @@ public partial class Card : Node2D
     public bool PositionInCardSlot {set; get;}
     
     private CardSlot _usingCardSlot;
+    
+    public bool MouseChooseInBattle { set; get; }
 
     #endregion
 
@@ -77,6 +83,17 @@ public partial class Card : Node2D
             GD.PrintErr("Card实例名 = " + GetName());
             GD.PrintErr("Card错误信息:" + e.Message);
             // throw;
+        }
+        
+        // 连接BattleManager 如果没有
+        BattleManager battleManager = GetNodeOrNull<BattleManager>("/root/Main/BattleManager");
+        if (battleManager == null)
+        {
+            Utils.PrintErr(this, "BattleManager获取不到,自动连接卡牌信号失败");
+        }
+        else
+        {
+            battleManager.ConnectCardSignal(this);
         }
     }
 
@@ -148,10 +165,11 @@ public partial class Card : Node2D
      * 平移动画更新卡牌位置
      * duration：速度
      */
-    public void AnimateCardToPosition(Vector2 newPosition,int duration)
+    public void AnimateCardToPosition(Vector2 newPosition,double duration)
     { 
         var tween = GetTree().CreateTween();
         tween.TweenProperty(this, "position", newPosition,duration);
+        ToSignal(tween, "finished");
 
     }
 
@@ -169,6 +187,11 @@ public partial class Card : Node2D
     public CardSlot GetCardSlot()
     {
         return _usingCardSlot;
+    }
+
+    public override string ToString()
+    {
+        return CardInfo.ToString();
     }
 
     #endregion

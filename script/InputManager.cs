@@ -234,7 +234,7 @@ public partial class InputManager : Node2D
                 .GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
             if (cardCollisionShape != null)
             {
-                cardCollisionShape.Disabled = true;
+                cardCollisionShape.Disabled = false;
             }
             else
             {

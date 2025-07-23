@@ -16,6 +16,8 @@ public partial class EnemyCard : Card
     private RichTextLabel _healthLabel;
     private OpponentDeck _opponentDeck;
     
+
+    
     #endregion
 
     #region 生命周期中的方法

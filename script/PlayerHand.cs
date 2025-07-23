@@ -44,7 +44,7 @@ public partial class PlayerHand : Node2D
      */
     public void AddToHand(Card card)
     {
-        if (card == null)
+        if (card == null || card.PositionInCardSlot == true)
         {
             return;
         }

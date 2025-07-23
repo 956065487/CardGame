@@ -30,6 +30,10 @@ public partial class BattleManager : Node2D
     private InputManager _inputManager;
     private RichTextLabel _playerHpLabel;
     private RichTextLabel _enemyHpLabel;
+    
+    private Card _hoveringCard; //用于储存悬停中的卡牌
+    private Card _currentAttackerCard;
+    private Card _currentDefenderCard;
 
     private int playerHp;
     private int enemyHp;
@@ -175,8 +179,85 @@ public partial class BattleManager : Node2D
     {
         // 1、回合结束按钮按下信号连接
         _endButton.Pressed += OnEndButtonPressed;
+
+        _inputManager.LeftMouseClicked += OnMouseClicked;
+        
+    }
+    
+    /**
+     * 当卡牌生成时，自动连接卡片信号
+     */
+    public void ConnectCardSignal(Card card)
+    {
+        if (card == null)
+        {
+            Utils.PrintErr(this,"获取不到Card信息，连接卡牌信号失败");
+            return;
+        }
+
+        card.Hover += OnHoverOnCard;
+        card.HoverOff += OnHoverOffCard;
+
     }
 
+    private void OnHoverOffCard(Card card)
+    {
+        // Utils.Print(this,"离开卡牌，不在悬停");
+        _hoveringCard = null;
+
+    }
+
+    private void OnHoverOnCard(Card card)
+    {
+        // Utils.Print(this,"卡牌悬停");
+        _hoveringCard = card;
+        // Utils.Print(this,card.ToString());
+    }
+
+
+    /**
+     * 当鼠标左键点击时
+     */
+    private void OnMouseClicked()
+    {
+        BattleCardClicked();
+    }
+
+    /**
+     * 战斗中卡牌点击时
+     */
+    private async void BattleCardClicked()
+    {
+        // TODO 当前有bug，连续点击时，位置会偏移
+        if (_hoveringCard != null)
+        {
+            if (_hoveringCard == _currentAttackerCard && _hoveringCard.MouseChooseInBattle)
+            {
+                // 如果玩家再次点击了卡牌,收回卡牌
+                Vector2 currentCardPosition = _currentAttackerCard.GlobalPosition;
+                Vector2 newPos = new Vector2(currentCardPosition.X, currentCardPosition.Y + 30);
+                _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
+                _currentAttackerCard.MouseChooseInBattle = false;
+                _currentAttackerCard = null;
+                return;
+            }
+            
+            if (_playerBattleCards.Contains(_hoveringCard) && !_hoveringCard.MouseChooseInBattle)
+            {
+                // 如果玩家战场中存在当前选中点击的卡牌，卡牌事件
+                // 偏移一部分
+                _currentAttackerCard = _hoveringCard;
+                var currentCardPosition = _currentAttackerCard.GlobalPosition;
+                Vector2 newPos = new Vector2(currentCardPosition.X, currentCardPosition.Y - 30);
+                _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
+                _currentAttackerCard.MouseChooseInBattle = true;
+            }
+        }
+        else
+        {
+            
+        }
+    }
 
     /**
      * 回合结束按钮按下
@@ -449,4 +530,6 @@ public partial class BattleManager : Node2D
     }
 
     #endregion
+
+    
 }

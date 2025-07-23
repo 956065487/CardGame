@@ -42,7 +42,7 @@ public partial class CardManager : Node2D
     public override void _Process(double delta)
     {
         var mousePos = GetGlobalMousePosition();
-        if (CardBeingDragged != null)
+        if (CardBeingDragged != null && !CardBeingDragged.PositionInCardSlot)
         {
             CardBeingDragged.Position = new Vector2(Mathf.Clamp(mousePos.X, 0, ScreenSize.X), Mathf.Clamp(mousePos.Y,
                 0, ScreenSize.Y));
@@ -59,6 +59,19 @@ public partial class CardManager : Node2D
      */
     public void HighLightCard(Card card, bool isHoured)
     {
+        if (card == null)
+        {
+            Utils.PrintErr("HighLightCard error  Card is null");
+            return;
+        }
+
+        if (card.PositionInCardSlot)
+        {
+            // 在卡槽中，不高亮显示
+            card.Scale = new Vector2(Constant.DEFAULT_CARD_SCALE_SIZE, Constant.DEFAULT_CARD_SCALE_SIZE);
+            return;
+        }
+        
         if (CardBeingDragged != null)
         {
             return;
@@ -87,10 +100,11 @@ public partial class CardManager : Node2D
             GD.PrintErr("错误：没能获取到Card信息");
             return;
         }
-
         card.Hover += OnHoverOverCard;
         card.HoverOff += OnHoverOffCard;
     }
+
+
 
     /**
      * 当鼠标悬停在卡上时
