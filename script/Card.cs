@@ -165,11 +165,11 @@ public partial class Card : Node2D
      * 平移动画更新卡牌位置
      * duration：速度
      */
-    public void AnimateCardToPosition(Vector2 newPosition,double duration)
+    public async Task AnimateCardToPosition(Vector2 newPosition,double duration)
     { 
         var tween = GetTree().CreateTween();
-        tween.TweenProperty(this, "position", newPosition,duration);
-        ToSignal(tween, "finished");
+        tween.TweenProperty(this, "position", newPosition, duration);
+        await ToSignal(tween, "finished");
 
     }
 

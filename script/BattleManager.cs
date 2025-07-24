@@ -30,13 +30,16 @@ public partial class BattleManager : Node2D
     private InputManager _inputManager;
     private RichTextLabel _playerHpLabel;
     private RichTextLabel _enemyHpLabel;
-    
+
     private Card _hoveringCard; //用于储存悬停中的卡牌
     private Card _currentAttackerCard;
     private Card _currentDefenderCard;
+    private Vector2 _originPosition;
 
     private int playerHp;
     private int enemyHp;
+    private bool _isAnimate;
+
 
     [Signal]
     private delegate void BattleFinishedEventHandler();
@@ -126,8 +129,6 @@ public partial class BattleManager : Node2D
         _inputManager = GetNode<InputManager>("/root/Main/InputManager");
         _playerHpLabel = GetNode<RichTextLabel>("/root/Main/EnemyHp");
         _enemyHpLabel = GetNode<RichTextLabel>("/root/Main/PlayerHp");
-        
-        
 
 
         if (_endButton == null)
@@ -181,9 +182,8 @@ public partial class BattleManager : Node2D
         _endButton.Pressed += OnEndButtonPressed;
 
         _inputManager.LeftMouseClicked += OnMouseClicked;
-        
     }
-    
+
     /**
      * 当卡牌生成时，自动连接卡片信号
      */
@@ -191,20 +191,18 @@ public partial class BattleManager : Node2D
     {
         if (card == null)
         {
-            Utils.PrintErr(this,"获取不到Card信息，连接卡牌信号失败");
+            Utils.PrintErr(this, "获取不到Card信息，连接卡牌信号失败");
             return;
         }
 
         card.Hover += OnHoverOnCard;
         card.HoverOff += OnHoverOffCard;
-
     }
 
     private void OnHoverOffCard(Card card)
     {
         // Utils.Print(this,"离开卡牌，不在悬停");
         _hoveringCard = null;
-
     }
 
     private void OnHoverOnCard(Card card)
@@ -228,34 +226,67 @@ public partial class BattleManager : Node2D
      */
     private async void BattleCardClicked()
     {
-        // TODO 当前有bug，连续点击时，位置会偏移
+        if (_isAnimate)
+        {
+            return;
+        }
+
+        // 敌人战场上没怪时，并且点击的是空白处，且已经选择了要攻击的卡牌
+        // 进行直接攻击敌方生命值
+        if (_enemyBattleCards.Count == 0 && _hoveringCard == null && _currentAttackerCard != null)
+        {
+            _isAnimate = true;
+            var currentCardPosition = _currentAttackerCard.GlobalPosition;
+            await DirectAttack(_currentAttackerCard);
+            Vector2 newPos = new Vector2(currentCardPosition.X, currentCardPosition.Y + 30);
+            await _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
+            _currentAttackerCard = null;
+            _isAnimate = false;
+            return;
+        }
+        
         if (_hoveringCard != null)
         {
-            if (_hoveringCard == _currentAttackerCard && _hoveringCard.MouseChooseInBattle)
+            if (_hoveringCard == _currentAttackerCard)
             {
+                _isAnimate = true;
                 // 如果玩家再次点击了卡牌,收回卡牌
-                Vector2 currentCardPosition = _currentAttackerCard.GlobalPosition;
+                var currentCardPosition = _currentAttackerCard.GlobalPosition;
                 Vector2 newPos = new Vector2(currentCardPosition.X, currentCardPosition.Y + 30);
-                _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
-                _currentAttackerCard.MouseChooseInBattle = false;
+                await _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
                 _currentAttackerCard = null;
+                _isAnimate = false;
                 return;
             }
-            
-            if (_playerBattleCards.Contains(_hoveringCard) && !_hoveringCard.MouseChooseInBattle)
+
+            if (_playerBattleCards.Contains(_hoveringCard))
             {
+                // 此时，玩家选择某张牌
+                _isAnimate = true;
+                if (_currentAttackerCard != null)
+                {
+                    // 重置选择的卡牌
+                    var oldCardPosition = _currentAttackerCard.GlobalPosition;
+                    Vector2 oldCardPos = new Vector2(oldCardPosition.X, oldCardPosition.Y + 30);
+                    await _currentAttackerCard.AnimateCardToPosition(oldCardPos, 0.3);
+                }
                 // 如果玩家战场中存在当前选中点击的卡牌，卡牌事件
                 // 偏移一部分
+
                 _currentAttackerCard = _hoveringCard;
                 var currentCardPosition = _currentAttackerCard.GlobalPosition;
                 Vector2 newPos = new Vector2(currentCardPosition.X, currentCardPosition.Y - 30);
-                _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
-                _currentAttackerCard.MouseChooseInBattle = true;
+                await _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
+                _isAnimate = false;
             }
-        }
-        else
-        {
-            
+
+            if (_enemyBattleCards.Contains(_hoveringCard) && _currentAttackerCard != null)
+            {
+                _isAnimate = true;
+                _currentDefenderCard = _hoveringCard;
+                await Attack(_currentAttackerCard, _currentDefenderCard);
+                _isAnimate = false;
+            }
         }
     }
 
@@ -294,6 +325,7 @@ public partial class BattleManager : Node2D
      */
     private void EnablePlayer()
     {
+        _isAnimate = false;
         CollisionShape2D deckCollisionShape2D =
             _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
         deckCollisionShape2D.Disabled = false;
@@ -354,12 +386,12 @@ public partial class BattleManager : Node2D
             // 手牌为0，且战场卡牌为0
             EndEnemyTurn();
             return;
-        } 
+        }
         else if (_enemyCards == null)
         {
             Utils.PrintErr(this, "EnemyTurn:未能获取到_enemyCards");
         }
-        
+
         // 对手回合的后续逻辑
         // 将卡牌移动到目标卡槽上
         // 并存储卡牌到List中
@@ -379,14 +411,14 @@ public partial class BattleManager : Node2D
                 _enemyHand.UpdateHandPositions();
             }
         }
-        
-        
+
+
         WaitTimerBySecond(5);
         await ToSignal(_battleTimer, "timeout");
 
         // 人机尝试操作
         await TryPlayCardWithRandomAttack();
-        
+
         EndEnemyTurn();
     }
 
@@ -429,22 +461,23 @@ public partial class BattleManager : Node2D
         await ToSignal(tween, "finished");
         attackingCard.ZIndex = 2;
         attackerCard.ZIndex = 2;
-        
+
         // 更新卡牌受到攻击后的新的生命值
         attackerCard.CardInfo.Hp = Math.Max(0, attackerCard.CardInfo.Hp - attackingCard.CardInfo.Attack);
         attackingCard.CardInfo.Hp = Math.Max(0, attackingCard.CardInfo.Hp - attackerCard.CardInfo.Attack);
-        
+
         attackerCard.UpdateCardInfoToLabel();
         attackingCard.UpdateCardInfoToLabel();
-        
+
         // 死亡结算
         if (attackingCard.CardInfo.Hp <= 0)
-        {   
+        {
             // 被攻击方代码逻辑
             if (attackingCard is EnemyCard)
             {
                 // 如果是敌人卡牌
-                Vector2 deadCardPosition = new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
+                Vector2 deadCardPosition =
+                    new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
                 attackingCard.AnimateCardToPosition(deadCardPosition);
                 _enemyBattleCards.Remove(attackingCard as EnemyCard);
                 _enemyMonsterCardSlots.Add(attackerCard.GetCardSlot());
@@ -459,7 +492,7 @@ public partial class BattleManager : Node2D
                 cardSlot.CardInSlot = false;
             }
         }
-        
+
         if (attackerCard.CardInfo.Hp <= 0)
         {
             //攻击方逻辑
@@ -467,7 +500,8 @@ public partial class BattleManager : Node2D
             if (attackerCard is EnemyCard)
             {
                 // 如果是敌人卡牌
-                Vector2 deadCardPosition = new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
+                Vector2 deadCardPosition =
+                    new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
                 attackerCard.AnimateCardToPosition(deadCardPosition);
                 _enemyBattleCards.Remove(attackerCard as EnemyCard);
                 _enemyMonsterCardSlots.Add(attackerCard.GetCardSlot());
@@ -481,7 +515,6 @@ public partial class BattleManager : Node2D
                 CardSlot cardSlot = attackerCard.GetCardSlot();
                 cardSlot.CardInSlot = false;
             }
-            
         }
     }
 
@@ -508,6 +541,7 @@ public partial class BattleManager : Node2D
             tween2.TweenProperty(attackerCard, "position", oldPosition, 0.8);
             enemyHp = enemyHp - attackerCard.CardInfo.Attack;
         }
+
         UpdateHp();
     }
 
@@ -530,6 +564,4 @@ public partial class BattleManager : Node2D
     }
 
     #endregion
-
-    
 }
