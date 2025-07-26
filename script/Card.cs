@@ -115,14 +115,14 @@ public partial class Card : Node2D
     /**
      * 鼠标进入后，发射悬停信号
      */
-    private void OnMouseEnter()
+    public void OnMouseEnter()
     {
         //GD.Print("成功连接MouseEnter");
         // MyHoverSignal();
         EmitSignalHover(this);
     }
 
-    private void OnMouseExit()
+    public void OnMouseExit()
     {
         //GD.Print("成功连接MouseExit");
         // HoverOffSignal();

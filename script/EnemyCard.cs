@@ -15,6 +15,7 @@ public partial class EnemyCard : Card
     private RichTextLabel _attackLabel;
     private RichTextLabel _healthLabel;
     private OpponentDeck _opponentDeck;
+    private Area2D _area2D;
     
 
     
@@ -33,11 +34,26 @@ public partial class EnemyCard : Card
         // 更新卡牌标签
         _attackLabel = GetNodeOrNull<RichTextLabel>("Attack");
         _healthLabel = GetNodeOrNull<RichTextLabel>("Health");
+        
+        _area2D.MouseEntered += OnMouseEnter;
+        _area2D.MouseExited += OnMouseExit;
+        
+        BattleManager battleManager = GetNodeOrNull<BattleManager>("/root/Main/BattleManager");
+        if (battleManager == null)
+        {
+            Utils.PrintErr(this, "BattleManager获取不到,自动连接卡牌信号失败");
+        }
+        else
+        {
+            battleManager.ConnectCardSignal(this);
+        }
     }
 
     private void GetNodes()
     {
         Node main = GetParent().GetParent();
+        _area2D = GetNodeOrNull<Area2D>("Area2D");
+
         if (main == null)
         {
             Utils.PrintErr(this,"获取Main节点失败！");
