@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using CardGame.script.constant;
 using Godot;
 
 namespace CardGame.script;
@@ -47,6 +49,28 @@ public static class Utils
         String callingMethodInfo = $"{callingMethod.DeclaringType.Name}.{callingMethod.Name}";
         GD.Print("[" + node.GetType().Name + "]" + node.GetName() + " : " + msg + $"            ------调用自{callingMethodInfo}------");
     }
-    
-    
+
+    /**
+     * 随机生成（begin ~ end）个卡到卡组中
+     * begin : 范围初始值
+     * end : 范围最大值
+     *
+     * return false : 随机生成失败
+     *        true : 随机生成成功
+     */
+    public static bool RandomCardInList(List<String> cardList,int begin, int end)
+    {
+        if (begin < 0 && begin > end)
+        {
+            return false;
+        }
+
+        int randomInt = GD.RandRange(begin, end);
+        for (int i = 0; i < randomInt; i++)
+        {
+            int randomCardNames = GD.RandRange(0,Constant.CARD_NAME_LIST.Count -1);
+            cardList.Add(Constant.CARD_NAME_LIST[randomCardNames]);
+        }
+        return true;
+    }
 }

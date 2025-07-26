@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace CardGame.script.constant;
 
@@ -21,4 +22,6 @@ public static class Constant
 
     // 生命值设置
     public const int STARTING_HP = 30;
+
+    public static readonly List<string> CARD_NAME_LIST = ["Knight", "Archer", "Demon"];
 }

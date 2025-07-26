@@ -222,12 +222,13 @@ public partial class BattleManager : Node2D
     }
 
     /**
-     * 战斗中卡牌点击时
+     * 玩家战斗中卡牌点击时
      */
     private async void BattleCardClicked()
     {
         if (_isAnimate)
         {
+            // 动画时，不触发逻辑
             return;
         }
 
@@ -237,9 +238,9 @@ public partial class BattleManager : Node2D
         {
             _isAnimate = true;
             var currentCardPosition = _currentAttackerCard.GlobalPosition;
-            await DirectAttack(_currentAttackerCard);
             Vector2 newPos = new Vector2(currentCardPosition.X, currentCardPosition.Y + 30);
-            await _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
+            await DirectAttack(_currentAttackerCard);
+            // await _currentAttackerCard.AnimateCardToPosition(newPos, 0.3);
             _currentAttackerCard = null;
             _isAnimate = false;
             return;
@@ -272,7 +273,12 @@ public partial class BattleManager : Node2D
                 }
                 // 如果玩家战场中存在当前选中点击的卡牌，卡牌事件
                 // 偏移一部分
-
+                if (_hoveringCard.AttackedInCurrentTurn)
+                {
+                    // 已经攻击过了
+                    _isAnimate = false;
+                    return;
+                }
                 _currentAttackerCard = _hoveringCard;
                 var currentCardPosition = _currentAttackerCard.GlobalPosition;
                 Vector2 newPos = new Vector2(currentCardPosition.X, currentCardPosition.Y - 30);
@@ -330,6 +336,12 @@ public partial class BattleManager : Node2D
             _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
         deckCollisionShape2D.Disabled = false;
         _deck._thisTurnDrawCard = false;
+        
+        // 遍历玩家战场，重新启用设置为未攻击过
+        for (var i = 0; i < _playerBattleCards.Count; i++)
+        {
+            _playerBattleCards[i].AttackedInCurrentTurn = false;
+        }
 
         List<Card> playerHandCards = _playerHand.GetPlayerHandCards();
         foreach (Card playerHandCard in playerHandCards)
@@ -516,8 +528,13 @@ public partial class BattleManager : Node2D
                 cardSlot.CardInSlot = false;
             }
         }
+        attackerCard.AttackedInCurrentTurn = true;
     }
 
+    /**
+     * 直接攻击对方
+     * 玩家攻击的时候，会将位置偏移到下方30位置（因为点击了卡牌）
+     */
     private async Task DirectAttack(Card attackerCard)
     {
         // 每个分支需要播放攻击动画
@@ -534,14 +551,14 @@ public partial class BattleManager : Node2D
         else
         {
             var tween1 = GetTree().CreateTween();
-            var oldPosition = attackerCard.GlobalPosition;
+            var oldPosition = new Vector2(attackerCard.GlobalPosition.X,attackerCard.GlobalPosition.Y + 30);
             tween1.TweenProperty(attackerCard, "position", _enemyHpLabel.GlobalPosition, 0.8);
             await ToSignal(tween1, "finished");
             var tween2 = GetTree().CreateTween();
             tween2.TweenProperty(attackerCard, "position", oldPosition, 0.8);
             enemyHp = enemyHp - attackerCard.CardInfo.Attack;
         }
-
+        attackerCard.AttackedInCurrentTurn = true;
         UpdateHp();
     }
 

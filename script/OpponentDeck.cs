@@ -9,8 +9,7 @@ public partial class OpponentDeck : Deck
 {
     #region 属性
 
-    private List<String> _enemyDeckList =
-        ["Demon", "Archer", "Knight", "Demon", "Archer", "Knight", "Archer", "Knight", "Archer", "Knight"];
+    private List<String> _enemyDeckList = [];
 
     private RichTextLabel _enemyNumLabel;
     private EnemyHand _enemyHand;
@@ -28,10 +27,20 @@ public partial class OpponentDeck : Deck
         GetNodes();
         HideArea2D();
         _startCardsNum = 4;
+        
+        // 生成卡组
+        bool success = Utils.RandomCardInList(_enemyDeckList,8,10);
+        if (!success)
+        {
+            Utils.PrintErr(this,"生成卡组失败，请检查输入值是否正确！");
+        }
+        
         for (int i = 0; i < _startCardsNum; i++)
         {
             DrawEnemyCard();
         }
+        
+        
     }
 
 

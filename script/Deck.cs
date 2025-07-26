@@ -10,8 +10,8 @@ using CardGame.script.pojo;
 public partial class Deck : Node2D
 {
 	#region 变量
-
-	private List<String> _playerDeck = ["Knight", "Archer", "Demon", "Knight","Knight","Demon","Archer"];
+	
+	private List<String> _playerDeck = [];
 
 	private RichTextLabel _numLabel;	// 显示卡组数量用
 
@@ -31,7 +31,13 @@ public partial class Deck : Node2D
 		_numLabel = GetNode<RichTextLabel>("NumberLabel");
 		_numLabel.Text = _playerDeck.Count.ToString();
 		_playerHand = GetNodeOrNull<PlayerHand>("/root/Main/PlayerHand");
-		
+
+		bool success = Utils.RandomCardInList(_playerDeck,8,10);
+		if (!success)
+		{
+			Utils.PrintErr(this,"生成卡组失败，请检查输入值是否正确！");
+		}
+
 		for (int i = 0; i < _startCardsNum; i++)
 		{
 			DrawCard();
@@ -39,6 +45,8 @@ public partial class Deck : Node2D
 		}
 		
 	}
+
+
 
 	/**
 	 * 生成新的卡片

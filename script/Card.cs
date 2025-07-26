@@ -31,6 +31,8 @@ public partial class Card : Node2D
     
     public bool MouseChooseInBattle { set; get; }
 
+    public bool AttackedInCurrentTurn { set; get; }
+
     #endregion
 
     #region 生命周期中的方法
