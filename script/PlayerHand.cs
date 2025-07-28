@@ -49,6 +49,8 @@ public partial class PlayerHand : Node2D
             return;
         }
         
+        card.SetCheckEnemyCard(false);
+        
         if (_cardWidth == 0)
         {
             // 获取卡牌宽度
@@ -56,7 +58,6 @@ public partial class PlayerHand : Node2D
             int currentCardWidth = cardImgSprite2D.Texture.GetWidth();
             this._cardWidth = currentCardWidth;
         }
-        
         
         if (!_playerHandCards.Contains(card))
         {

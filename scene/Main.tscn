@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=4 uid="uid://blgcvsw5expnj"]
+[gd_scene load_steps=25 format=4 uid="uid://blgcvsw5expnj"]
 
 [ext_resource type="Script" uid="uid://ej2mrtdh58b3" path="res://script/CardManager.cs" id="1_h6nst"]
 [ext_resource type="Script" uid="uid://yn4b5vupq8lk" path="res://script/EnemyHand.cs" id="3_aex65"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://bu7nhp6ib5dkk" path="res://script/BattleManager.cs" id="13_hrl0l"]
 [ext_resource type="Texture2D" uid="uid://b1btqrsbgp4mu" path="res://asset/PlayerAndEnemy/playerImg.png" id="14_tuai4"]
 [ext_resource type="Texture2D" uid="uid://dfv55e4qokx6n" path="res://asset/PlayerAndEnemy/enemyImg.png" id="15_ob58h"]
+[ext_resource type="PackedScene" uid="uid://bdremdxvmd1k" path="res://scene/MagicCard.tscn" id="16_ob58h"]
 
 [sub_resource type="Image" id="Image_x4yfu"]
 data = {
@@ -982,6 +983,9 @@ Button/styles/pressed = SubResource("StyleBoxFlat_3hqfm")
 
 [node name="CardManager" type="Node2D" parent="."]
 script = ExtResource("1_h6nst")
+
+[node name="Tornado" parent="CardManager" instance=ExtResource("16_ob58h")]
+position = Vector2(333, 476)
 
 [node name="PlayerHand" type="Node2D" parent="."]
 script = ExtResource("3_yiwpq")

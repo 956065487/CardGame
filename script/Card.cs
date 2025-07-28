@@ -33,6 +33,8 @@ public partial class Card : Node2D
 
     public bool AttackedInCurrentTurn { set; get; }
 
+    private Sprite2D _cardImg;
+
     #endregion
 
     #region 生命周期中的方法
@@ -40,9 +42,10 @@ public partial class Card : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        GetNodes();
         CheckEnemyCard = false;
         // 设置卡牌出现的初始位置
-        Node main = GetParent().GetParent();
+        Node main = GetNodeOrNull("/root/Main");
         if (main == null)
         {
             Utils.PrintErr(this, "获取Main节点失败！");
@@ -99,6 +102,15 @@ public partial class Card : Node2D
         }
     }
 
+    private void GetNodes()
+    {
+        // 更新卡牌标签
+        AttackLabel = GetNodeOrNull<RichTextLabel>("Attack");
+        HealthLabel = GetNodeOrNull<RichTextLabel>("Health");
+        _cardImg = GetNodeOrNull<Sprite2D>("CardImg");
+        GD.Print("card GetNodes");
+    }
+
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
@@ -111,6 +123,20 @@ public partial class Card : Node2D
     #endregion
 
     #region 自定义的方法
+    
+    /**
+     * 初始化魔法卡
+     */
+    public void InitMagicCard()
+    {
+        AttackLabel = GetNodeOrNull<RichTextLabel>("Attack");
+        HealthLabel = GetNodeOrNull<RichTextLabel>("Health");
+        AttackLabel.Visible = false;
+        HealthLabel.Visible = false;
+        // _cardImg.Visible = false;
+        
+        // _animationPlayer.Play("CardSlip");
+    }
 
     /**
      * 鼠标进入后，发射悬停信号
@@ -136,9 +162,6 @@ public partial class Card : Node2D
      */
     public void UpdateCardInfoToLabel()
     {
-        // 更新卡牌标签
-        AttackLabel = GetNodeOrNull<RichTextLabel>("Attack");
-        HealthLabel = GetNodeOrNull<RichTextLabel>("Health");
         AttackLabel.Text = $"{CardInfo.Attack}";
         HealthLabel.Text = $"{CardInfo.Hp}";
     }
@@ -146,6 +169,11 @@ public partial class Card : Node2D
     public bool GetCheckEnemyCard()
     {
         return CheckEnemyCard;
+    }
+    
+    public void SetCheckEnemyCard(bool isEnemyCard)
+    {
+        CheckEnemyCard = isEnemyCard;
     }
 
     public CardInfo GetCardInfo()

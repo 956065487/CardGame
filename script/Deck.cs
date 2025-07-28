@@ -37,6 +37,7 @@ public partial class Deck : Node2D
 		{
 			Utils.PrintErr(this,"生成卡组失败，请检查输入值是否正确！");
 		}
+		
 
 		for (int i = 0; i < _startCardsNum; i++)
 		{
@@ -55,6 +56,12 @@ public partial class Deck : Node2D
 	{
 		if (_thisTurnDrawCard)
 		{
+			return;
+		}
+		
+		if (_playerHand == null)
+		{
+			Utils.PrintErr(this,"获取不到playerHand实例！");
 			return;
 		}
 		
@@ -78,30 +85,42 @@ public partial class Deck : Node2D
 		int randomCardIndex = GD.RandRange(0, _playerDeck.Count-1);
 		var cardDraw = _playerDeck[randomCardIndex];
 		_playerDeck.Remove(cardDraw);
+		
+		
 		_numLabel.Text = _playerDeck.Count.ToString();
-		
 		//GD.Print("DrawCard");
-		PackedScene cardScene = GD.Load<PackedScene>(Constant.CARD_SCENE_PATH);
-		
-		if (_playerHand == null)
+		CardInfo cardInfo = CardDataLoader.GetCardInfo(cardDraw);
+		Card newCard = null;
+		PackedScene cardScene;
+		if (cardInfo.CardType.Equals("Magic"))
 		{
-			Utils.PrintErr(this,"获取不到playerHand实例！");
-			return;
+			cardScene = GD.Load<PackedScene>(Constant.MAGIC_CARD_SCENE_PATH);
+			newCard = (MagicCard)cardScene.Instantiate();
+			newCard.CardInfo = cardInfo;
+			newCard.InitMagicCard();
+			// magicCard.OnAnimationPlayerFinished("CardSlip");
+			
+			newCard.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
+			// newCard.Name = "MagicCard";
+		}
+		else
+		{
+			cardScene = GD.Load<PackedScene>(Constant.CARD_SCENE_PATH);
+			newCard = (Card)cardScene.Instantiate();
+			// 播放翻转动画
+			newCard.CardInfo = cardInfo;
+			newCard.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
 		}
 		
-		Card newCard = (Card)cardScene.Instantiate();
+		
 		GetNode("/root/Main/CardManager").AddChild(newCard);
-		newCard.Name = "Card";
+		
 		Sprite2D CardImg = newCard.GetNodeOrNull<Sprite2D>("CardImg");
 		CardImg.Texture = GD.Load<Texture2D>($"res://asset/CardImg/" + cardDraw +"Card.png");
 		
-		CardInfo cardInfo = CardDataLoader.GetCardInfo(cardDraw);
-		newCard.CardInfo = cardInfo;
 		newCard.UpdateCardInfoToLabel();
-		
 		_playerHand.AddToHand(newCard);
-		// 播放翻转动画
-		newCard.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
+		
 		
 		
 	}

@@ -47,6 +47,8 @@ public partial class EnemyHand : Node2D
         {
             return;
         }
+        
+        card.SetCheckEnemyCard(true);
 
         if (_cardWidth == 0)
         {

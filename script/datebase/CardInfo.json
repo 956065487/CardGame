@@ -20,6 +20,13 @@
       "Attack" : 4,
       "Description" : "一名强大的恶魔",
       "CardType" : "Monster"
+    },
+    "Tornado" : {
+      "Name" : "龙卷风",
+      "Hp" : null,
+      "Attack" : null,
+      "Description" : "所到之处寸草不生",
+      "CardType" : "Magic"
     }
   }
 }

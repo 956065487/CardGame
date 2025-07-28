@@ -11,6 +11,7 @@ public static class Constant
     
     
     public const String CARD_SCENE_PATH = "res://scene/Card.tscn";
+    public const String MAGIC_CARD_SCENE_PATH = "res://scene/MagicCard.tscn";
     public const String ENEMY_CARD_SCENE_PATH = "res://scene/EnemyCard.tscn";
 
 
@@ -23,5 +24,5 @@ public static class Constant
     // 生命值设置
     public const int STARTING_HP = 30;
 
-    public static readonly List<string> CARD_NAME_LIST = ["Knight", "Archer", "Demon"];
+    public static readonly List<string> CARD_NAME_LIST = ["Knight", "Archer", "Demon","Tornado"];
 }

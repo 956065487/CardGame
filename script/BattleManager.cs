@@ -255,10 +255,13 @@ public partial class BattleManager : Node2D
         }
         // 敌人战场上没怪时，并且点击的是空白处，且已经选择了要攻击的卡牌
         // 进行直接攻击敌方生命值
-        // TODO
-        // 需要判断不是点击了回合结束按钮
         if (_enemyBattleCards.Count == 0 && _hoveringCard == null && _currentAttackerCard != null && !_endButtonMouseEntered)
         {
+            if (_currentAttackerCard.CardInfo.CardType.Equals("Magic"))
+            {
+                // 防止魔法卡触发直接攻击，导致位移的bug
+                return;
+            }
             _isAnimate = true;
             await DirectAttack(_currentAttackerCard);
             _currentAttackerCard = null;
@@ -513,6 +516,10 @@ public partial class BattleManager : Node2D
      */
     private async Task Attack(Card attackerCard, Card attackingCard)
     {
+        if (attackerCard.CardInfo.CardType.Equals("Magic"))
+        {
+            return;
+        }
         Utils.Print(this, "Attack");
         var tween = GetTree().CreateTween();
         var OldPosition = attackerCard.GlobalPosition;
@@ -594,6 +601,10 @@ public partial class BattleManager : Node2D
      */
     private async Task DirectAttack(Card attackerCard)
     {
+        if (attackerCard.CardInfo.CardType.Equals("Magic"))
+        {
+            return;
+        }
         if (attackerCard.CardInfo.Hp <= 0)
         {
             return;
