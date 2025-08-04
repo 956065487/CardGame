@@ -108,7 +108,7 @@ public partial class Card : Node2D
         AttackLabel = GetNodeOrNull<RichTextLabel>("Attack");
         HealthLabel = GetNodeOrNull<RichTextLabel>("Health");
         _cardImg = GetNodeOrNull<Sprite2D>("CardImg");
-        GD.Print("card GetNodes");
+        // GD.Print("card GetNodes");
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -162,6 +162,8 @@ public partial class Card : Node2D
      */
     public void UpdateCardInfoToLabel()
     {
+        AttackLabel = GetNodeOrNull<RichTextLabel>("Attack");
+        HealthLabel = GetNodeOrNull<RichTextLabel>("Health");
         AttackLabel.Text = $"{CardInfo.Attack}";
         HealthLabel.Text = $"{CardInfo.Hp}";
     }

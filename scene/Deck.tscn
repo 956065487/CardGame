@@ -13,17 +13,17 @@ position = Vector2(-0.499999, 9.53674e-06)
 scale = Vector2(1.27857, 1.37895)
 texture = ExtResource("1_v2k1t")
 
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_v2k1t")
-
 [node name="NumberLabel" type="RichTextLabel" parent="."]
 modulate = Color(0, 0, 0, 1)
-z_index = -2
+z_index = 2
 custom_minimum_size = Vector2(-9, -28)
 offset_left = 4.0
 offset_right = 44.0
 offset_bottom = 40.0
 text = "0"
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_v2k1t")

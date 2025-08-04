@@ -56,26 +56,24 @@ public partial class InputManager : Node2D
         {
             if (mouseEvent.Pressed)
             {
+                Vector2 mousePosition = mouseEvent.Position;
+                _positionOnMouseClick = mousePosition;
                 // 发射信号
                 //检查卡牌拖动等逻辑
                 EmitSignalLeftMouseClicked();
-                Node2D checkForCursor = CheckForCursor();
-                if (checkForCursor is Card)
+                Node2D clickedNode2D = GetClickedNode2D(mousePosition);
+                if (clickedNode2D is Card card)
                 {
-                    Card draggedCard = (Card)checkForCursor;
+                    Card draggedCard = card;
                     if (draggedCard.GetCheckEnemyCard())
                     {
                         return;
                     }
                     
                     CardManager.CardBeingDragged = draggedCard;
-                    // Utils.Print(this,$"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
+                    Utils.Print(this,$"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
                 }
                 
-                // 获取点击的鼠标的位置
-                _positionOnMouseClick = mouseEvent.Position;
-                
-                // 
             }
             else
             {
@@ -88,60 +86,72 @@ public partial class InputManager : Node2D
     #endregion
 
     #region 自定义方法
-    
+
     /**
-     * 获取光标下的东西
-     * 如果不为 Card 对象，返回Null
+     * 获取鼠标下的Node节点
      */
-    public Node2D CheckForCursor()
+    public Node2D GetClickedNode2D(Vector2 mousePosition)
     {
-        // 获取被点击的Area2d的父级
-        PhysicsDirectSpaceState2D spaceState2D = GetWorld2D().DirectSpaceState;
-        var parameters2D = new PhysicsPointQueryParameters2D();
-        parameters2D.Position = GetGlobalMousePosition();
-        parameters2D.CollideWithAreas = true;
-        Array<Dictionary> result = spaceState2D.IntersectPoint(parameters2D);
-        if (result.Count > 0)
+        var spaceState = GetWorld2D().DirectSpaceState;
+        var query = new PhysicsPointQueryParameters2D();
+        query.Position = mousePosition;
+        query.CollideWithAreas = true;  // 如果卡牌使用area2d
+        query.CollideWithBodies = true; // 如果使用RigidBody2d
+        
+        // 执行查询
+        var results = spaceState.IntersectPoint(query,32);  //限制最多返回数量
+
+        foreach (var result in results)
         {
-            //判断 CollisionMask 是属于 什么类型的对象
-            Node2D colliderNode2D = result[0]["collider"].As<Node2D>();
-            if (colliderNode2D == null)
+            var collider = result["collider"].AsGodotObject();
+            
+            // 获取碰撞体的父节点
+            Node2D clickedNode2D = null;
+            if (collider is Node2D node2D)
             {
-                Utils.PrintErr(this, "colliderNode2D is null");
+                clickedNode2D = node2D;
+            }
+            else if (collider is Node node)
+            {
+                clickedNode2D = node.GetParent<Node2D>();
             }
 
-            CollisionObject2D colliderObject = colliderNode2D as CollisionObject2D;
-            if (colliderObject == null)
+            if (collider is Area2D area2D)
             {
-                Utils.PrintErr(this, "colliderNode2D is not a CollisionObject2D");
+                // 如果是Area2D对象，尝试获取父节点
+                clickedNode2D = area2D.GetParent<Node2D>();
             }
 
-            var resultCollisionLayer = colliderObject.CollisionLayer;
-            if (resultCollisionLayer == Constant.LAYER_CARD)
+            if (clickedNode2D != null)
             {
-                // Card对象 被 点击
-                if (colliderObject.GetParent().GetType() == typeof(Card))
+                // 按继承层次判断之类，然后父类
+                if (clickedNode2D is MagicCard magicCard)
                 {
-                    return colliderObject.GetParent() as Card;
+                    Utils.Print(this,$"MagicCard 点击到了。类型 = {magicCard.CardInfo.CardType}");
+                    return magicCard;
                 }
-            }
-            else if (resultCollisionLayer == Constant.LAYER_DECK)
-            {
-                // Deck.DrawCard();    // 生成卡牌，现在改为不用手动抽牌，自动发牌
-            }
-            else if (resultCollisionLayer == Constant.LAYER_SLOT)
-            {
-                // 卡槽 被 点击
-                if (colliderObject.GetParent() is CardSlot)
+                else if (clickedNode2D is Card card)
                 {
-                    CardSlot cardSlot = colliderObject.GetParent() as CardSlot;
-                    // Utils.Print(cardSlot,$"这里是卡槽,卡槽类型是 : {cardSlot.CardSlotType}");
-                    return colliderObject.GetParent() as CardSlot;
+                    Utils.Print(this,$"Card <UNK> = {card.CardInfo.CardType}");
+                    return card;
                 }
-                
+                else if (clickedNode2D is OpponentDeck opponentDeck)
+                {
+                    Utils.Print(this, $"获取到了敌方卡牌堆");
+                    return opponentDeck;
+                }
+                else if (clickedNode2D is Deck deck)
+                {
+                    Utils.Print(this,"获取到了玩家卡牌堆");
+                    return deck;
+                }
+                else if (clickedNode2D is CardSlot cardSlot)
+                {
+                    Utils.Print(this,"获取到了卡槽");
+                    return cardSlot;
+                }
             }
         }
-
         return null;
     }
 
