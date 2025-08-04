@@ -40,8 +40,8 @@ public partial class BattleManager : Node2D
     private int enemyHp;
     private bool _isAnimate;
     private bool _endButtonMouseEntered;
-
-
+    private List<MagicCard> _playerMagicBattleCards = new List<MagicCard>();
+    
     [Signal]
     private delegate void BattleFinishedEventHandler();
 
@@ -222,13 +222,13 @@ public partial class BattleManager : Node2D
 
     private void OnHoverOffCard(Card card)
     {
-        Utils.Print(this,"离开卡牌，不在悬停");
+        //Utils.Print(this,"离开卡牌，不在悬停");
         _hoveringCard = null;
     }
 
     private void OnHoverOnCard(Card card)
     {
-        Utils.Print(this,"卡牌悬停");
+        // Utils.Print(this,"卡牌悬停");
         _hoveringCard = card;
         // Utils.Print(this,card.ToString());
     }
@@ -516,7 +516,7 @@ public partial class BattleManager : Node2D
      */
     private async Task Attack(Card attackerCard, Card attackingCard)
     {
-        if (attackerCard.CardInfo.CardType.Equals("Magic"))
+        if (attackerCard.CardInfo.CardType.Equals("Magic") || attackingCard.CardInfo.CardType.Equals("Magic"))
         {
             return;
         }
@@ -652,5 +652,40 @@ public partial class BattleManager : Node2D
         Utils.Print(this, "Battle Finished emit");
     }
 
+    /**
+     * 将魔法卡牌加入到战场中
+     */
+    public void AddTOPlayerBattleMagicCards(Card cardManagerCardBeingDragged)
+    {
+        if (!"Magic".Equals(cardManagerCardBeingDragged.CardInfo.CardType))
+        {
+            Utils.PrintErr("警告：不是魔法卡牌，加入魔法卡牌列表失败！");
+            return;
+        }
+        _playerMagicBattleCards.Add(cardManagerCardBeingDragged as MagicCard);
+    }
+    
     #endregion
+
+
+    /**
+     * InputManager中，FinishedDragged后，使用魔法卡，调用此方法
+     * 后续不同的魔法卡能力，都从这个方法中调用
+     */
+    public void UsingMagicCard(MagicCard magicCard)
+    {
+        // TODO
+        // 各种魔法卡能力实现
+        if (magicCard == null)
+        {
+            Utils.PrintErr("错误，magicCard为null");
+            return;
+        }
+        
+        if (magicCard.CardInfo.Name.Equals("龙卷风"))
+        {
+            
+            
+        }
+    }
 }

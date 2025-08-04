@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
 
 namespace CardGame.script;
@@ -41,7 +42,7 @@ public partial class EnemyHand : Node2D
     /**
      * 将卡片添加到手中
      */
-    public void AddToHand(EnemyCard card)
+    public async void AddToHand(EnemyCard card)
     {
         if (card == null)
         {
@@ -67,7 +68,7 @@ public partial class EnemyHand : Node2D
         }
         else
         {
-            AnimateCardToPosition(card, card.PositionInHand);
+            await AnimateCardToPosition(card, card.PositionInHand);
         }
     }
 
@@ -93,10 +94,11 @@ public partial class EnemyHand : Node2D
     /**
      * 动画移动卡牌位置，默认不翻转
      */
-    public void AnimateCardToPosition(Card card, Vector2 newPosition)
+    public async Task AnimateCardToPosition(Card card, Vector2 newPosition)
     {
         var tween = GetTree().CreateTween();
         tween.TweenProperty(card, "position", newPosition, 1);
+        await ToSignal(tween, "finished");
     }
     
     /**

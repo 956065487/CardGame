@@ -69,9 +69,8 @@ public partial class InputManager : Node2D
                     {
                         return;
                     }
-                    
                     CardManager.CardBeingDragged = draggedCard;
-                    Utils.Print(this,$"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
+                    // Utils.Print(this,$"被拖拽的卡片类型是：{CardManager.CardBeingDragged.CardInfo.CardType}");
                 }
                 
             }
@@ -125,7 +124,12 @@ public partial class InputManager : Node2D
             if (clickedNode2D != null)
             {
                 // 按继承层次判断之类，然后父类
-                if (clickedNode2D is MagicCard magicCard)
+                if (clickedNode2D is Tornado tornado)
+                {
+                    Utils.Print(this,$"Tornado 点击到了");
+                    return tornado;
+                }
+                else if (clickedNode2D is MagicCard magicCard)
                 {
                     Utils.Print(this,$"MagicCard 点击到了。类型 = {magicCard.CardInfo.CardType}");
                     return magicCard;
@@ -238,7 +242,16 @@ public partial class InputManager : Node2D
             CardManager.CardBeingDragged.SetCardSlot(bestCardSlot);
             CardManager.CardBeingDragged.PositionInCardSlot = true; // 标记卡牌在卡槽中
             CardManager.PlayerHandNode2d.RemoveCardFromHand(CardManager.CardBeingDragged);
-            _battleManager.AddToPlayerBattleCards(CardManager.CardBeingDragged);
+
+            if ("Monster".Equals(CardManager.CardBeingDragged.CardInfo.CardType))
+            {
+                _battleManager.AddToPlayerBattleCards(CardManager.CardBeingDragged);
+            }
+            else if ("Magic".Equals(CardManager.CardBeingDragged.CardInfo.CardType))
+            {
+                _battleManager.AddTOPlayerBattleMagicCards(CardManager.CardBeingDragged);
+                _battleManager.UsingMagicCard((MagicCard)CardManager.CardBeingDragged);
+            }
             // 无论吸附成功与否，都要重新启用卡牌的碰撞体
             CollisionShape2D cardCollisionShape = CardManager.CardBeingDragged
                 .GetNodeOrNull<CollisionShape2D>("Area2D/CollisionShape2D");
