@@ -124,6 +124,11 @@ public partial class OpponentDeck : Deck
         newCard.UpdateCardInfo();
         // Utils.Print(this,$"创建时，卡牌的信息是{newCard.CardInfo}");
 
+        if ("Magic".Equals(newCard.CardInfo.CardType))
+        {
+            newCard.GetNode<RichTextLabel>("Attack").Visible = false;
+            newCard.GetNode<RichTextLabel>("Health").Visible = false;
+        }
         _enemyHand.AddToHand(newCard);
         // 播放翻转动画，敌方卡牌不翻转
         // newCard.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");

@@ -24,6 +24,7 @@ public partial class Card : Node2D
     public CardInfo CardInfo { set; get; }
     public RichTextLabel AttackLabel;
     public RichTextLabel HealthLabel;
+    private RichTextLabel _ability;
     protected bool CheckEnemyCard;
     public bool PositionInCardSlot {set; get;}
     
@@ -100,6 +101,22 @@ public partial class Card : Node2D
         {
             battleManager.ConnectCardSignal(this);
         }
+        
+        // 更新卡牌描述
+        _ability.Text = CardInfo.Description;
+        _ability.FitContent = true; // 自动更新尺寸
+        _ability.Visible = false;   // 默认隐藏
+        
+        var styleBox = new StyleBoxFlat();
+        styleBox.BgColor = new Color(0.6f, 0.6f, 0.6f); // 如果颜色有问题，这一行注释
+        styleBox.BorderWidthLeft = 2;
+        styleBox.BorderWidthRight = 2;
+        styleBox.BorderWidthBottom = 2;
+        styleBox.BorderWidthTop = 2;
+        styleBox.BorderColor = new Color(255, 255, 255);
+
+        _ability.AddThemeStyleboxOverride("normal",styleBox);
+        _ability.PushBgcolor(Colors.Black);
     }
 
     private void GetNodes()
@@ -108,6 +125,7 @@ public partial class Card : Node2D
         AttackLabel = GetNodeOrNull<RichTextLabel>("Attack");
         HealthLabel = GetNodeOrNull<RichTextLabel>("Health");
         _cardImg = GetNodeOrNull<Sprite2D>("CardImg");
+        _ability = GetNodeOrNull<RichTextLabel>("AbilityDescription");
         // GD.Print("card GetNodes");
     }
 
@@ -140,19 +158,26 @@ public partial class Card : Node2D
 
     /**
      * 鼠标进入后，发射悬停信号
+     * 显示卡牌能力
      */
     public void OnMouseEnter()
     {
         //GD.Print("成功连接MouseEnter");
         // MyHoverSignal();
         EmitSignalHover(this);
+        _ability.Visible = true;
+        
     }
 
+    /**
+     * 退出时，关闭卡牌能力描述
+     */
     public void OnMouseExit()
     {
         //GD.Print("成功连接MouseExit");
         // HoverOffSignal();
         EmitSignalHoverOff(this);
+        _ability.Visible = false;
     }
 
     /**

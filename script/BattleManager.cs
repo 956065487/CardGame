@@ -682,9 +682,9 @@ public partial class BattleManager : Node2D
             return;
         }
         
-        if (magicCard.CardInfo.Name.Equals("龙卷风"))
+        if ("龙卷风".Equals(magicCard.CardInfo.Name))
         {
-            
+            Utils.Print("龙卷风魔法卡使用！");
             
         }
     }
