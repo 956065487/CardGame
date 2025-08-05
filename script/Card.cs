@@ -165,6 +165,10 @@ public partial class Card : Node2D
         //GD.Print("成功连接MouseEnter");
         // MyHoverSignal();
         EmitSignalHover(this);
+        if (this is EnemyCard)
+        {
+            return;
+        }
         _ability.Visible = true;
         
     }
@@ -177,6 +181,11 @@ public partial class Card : Node2D
         //GD.Print("成功连接MouseExit");
         // HoverOffSignal();
         EmitSignalHoverOff(this);
+        
+        if (this is EnemyCard)
+        {
+            return;
+        }
         _ability.Visible = false;
     }
 
