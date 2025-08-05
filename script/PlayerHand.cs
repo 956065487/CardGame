@@ -106,7 +106,7 @@ public partial class PlayerHand : Node2D
      */
     private float CalculateCardPositon(int index)
     {
-        var totalWidth = (_playerHandCards.Count - 1) * _cardWidth;
+        var totalWidth = (_playerHandCards.Count) * _cardWidth;
         var xOffset = _centerScreenX + index*_cardWidth - totalWidth / 2;
         return xOffset;
     }
