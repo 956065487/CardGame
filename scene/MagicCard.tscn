@@ -1,0 +1,49 @@
+[gd_scene load_steps=8 format=3 uid="uid://bdremdxvmd1k"]
+
+[ext_resource type="PackedScene" uid="uid://cyno5k26k5kat" path="res://scene/Card.tscn" id="1_1qwr3"]
+[ext_resource type="Texture2D" uid="uid://dehxmwbbltfvy" path="res://asset/Fire Tornado/tornado1.png" id="2_0ux8j"]
+[ext_resource type="Script" uid="uid://cubggan1vjj36" path="res://script/MagicCard.cs" id="2_bj7k7"]
+[ext_resource type="Texture2D" uid="uid://bg1bx1uquphf" path="res://asset/Fire Tornado/tornado2.png" id="3_2nff3"]
+[ext_resource type="Texture2D" uid="uid://bvyujtp7cylak" path="res://asset/Fire Tornado/tornado3.png" id="4_6tcuf"]
+[ext_resource type="Texture2D" uid="uid://ch886b15nycoj" path="res://asset/Fire Tornado/tornado4.png" id="5_hootb"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lufeu"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_0ux8j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_2nff3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_6tcuf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_hootb")
+}],
+"loop": false,
+"name": &"state1",
+"speed": 5.0
+}]
+
+[node name="MagicCard" instance=ExtResource("1_1qwr3")]
+script = ExtResource("2_bj7k7")
+
+[node name="CardImg" parent="." index="0"]
+modulate = Color(1, 1, 1, 0)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." index="2"]
+position = Vector2(-1.25009, -17.5)
+scale = Vector2(1e-05, 1.73)
+sprite_frames = SubResource("SpriteFrames_lufeu")
+animation = &"state1"
+frame = 3
+frame_progress = 1.0
+
+[node name="CollisionShape2D" parent="Area2D" index="0"]
+position = Vector2(-0.218719, -6)
+
+[node name="Attack" parent="." index="4"]
+offset_left = -53.75
+offset_right = -26.75

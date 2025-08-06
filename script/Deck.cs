@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using CardGame.script;
+using CardGame.script.cardAbility;
 using CardGame.script.constant;
 using CardGame.script.pojo;
 
@@ -92,7 +93,18 @@ public partial class Deck : Node2D
 		CardInfo cardInfo = CardDataLoader.GetCardInfo(cardDraw);
 		Card newCard = null;
 		PackedScene cardScene;
-		if (cardInfo.CardType.Equals("Magic"))
+		if ("龙卷风".Equals(cardInfo.Name))
+		{
+			cardScene = GD.Load<PackedScene>(Constant.TORNADO_CARD_SCENE_PATH);
+			newCard = (Tornado)cardScene.Instantiate();
+			newCard.CardInfo = cardInfo;
+			newCard.InitMagicCard();
+			// magicCard.OnAnimationPlayerFinished("CardSlip");
+			
+			newCard.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
+			// newCard.Name = "MagicCard";
+		}
+		else if (cardInfo.CardType.Equals("Magic"))
 		{
 			cardScene = GD.Load<PackedScene>(Constant.MAGIC_CARD_SCENE_PATH);
 			newCard = (MagicCard)cardScene.Instantiate();

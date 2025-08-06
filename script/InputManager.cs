@@ -3,6 +3,7 @@ using System;
 using CardGame.script;
 using CardGame.script.constant;
 using Godot.Collections;
+using Tornado = CardGame.script.cardAbility.Tornado;
 
 public partial class InputManager : Node2D
 {

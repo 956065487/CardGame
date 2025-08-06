@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CardGame.script;
+using CardGame.script.cardAbility;
 using CardGame.script.constant;
 using CardGame.script.pojo;
 using Godot.Collections;
@@ -25,8 +26,8 @@ public partial class BattleManager : Node2D
     private List<EnemyCard> _enemyCards; //敌人卡牌列表
     private PlayerHand _playerHand; //玩家手牌
     private Deck _deck; //玩家牌堆
-    private List<Card> _playerBattleCards = new List<Card>();
-    private List<EnemyCard> _enemyBattleCards = new List<EnemyCard>();
+    public List<Card> _playerBattleCards = new List<Card>();
+    public List<EnemyCard> _enemyBattleCards = new List<EnemyCard>();
     private InputManager _inputManager;
     private RichTextLabel _playerHpLabel;
     private RichTextLabel _enemyHpLabel;
@@ -427,7 +428,7 @@ public partial class BattleManager : Node2D
     /**
      * 按秒计时
      */
-    private void WaitTimerBySecond(int second)
+    public void WaitTimerBySecond(int second)
     {
         _battleTimer.OneShot = true; // 标记为一次性
         _battleTimer.WaitTime = second;
@@ -548,51 +549,38 @@ public partial class BattleManager : Node2D
         // 死亡结算
         if (attackingCard.CardInfo.Hp <= 0)
         {
+            DestroyCard(attackingCard);
+        }
+        
+        if (attackerCard.CardInfo.Hp <= 0)
+        {
+            DestroyCard(attackerCard);
+        }
+        
+        attackerCard.AttackedInCurrentTurn = true;
+    }
+
+    public void DestroyCard(Card destroyCard)
+    {
             // 被攻击方代码逻辑
-            if (attackingCard is EnemyCard)
+            if (destroyCard is EnemyCard)
             {
                 // 如果是敌人卡牌
                 Vector2 deadCardPosition =
                     new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
-                attackingCard.AnimateCardToPosition(deadCardPosition);
-                _enemyBattleCards.Remove(attackingCard as EnemyCard);
-                _enemyMonsterCardSlots.Add(attackerCard.GetCardSlot());
+                destroyCard.AnimateCardToPosition(deadCardPosition);
+                _enemyBattleCards.Remove(destroyCard as EnemyCard);
+                _enemyMonsterCardSlots.Add(destroyCard.GetCardSlot());
             }
             else
             {
                 // 玩家卡牌     墓地deck Y - 300
                 Vector2 deadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
-                attackingCard.AnimateCardToPosition(deadCardPosition);
-                _playerBattleCards.Remove(attackingCard);
-                CardSlot cardSlot = attackingCard.GetCardSlot();
+                destroyCard.AnimateCardToPosition(deadCardPosition);
+                _playerBattleCards.Remove(destroyCard);
+                CardSlot cardSlot = destroyCard.GetCardSlot();
                 cardSlot.CardInSlot = false;
             }
-        }
-
-        if (attackerCard.CardInfo.Hp <= 0)
-        {
-            //攻击方逻辑
-            // 电脑墓地 Y + 300
-            if (attackerCard is EnemyCard)
-            {
-                // 如果是敌人卡牌
-                Vector2 deadCardPosition =
-                    new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
-                attackerCard.AnimateCardToPosition(deadCardPosition);
-                _enemyBattleCards.Remove(attackerCard as EnemyCard);
-                _enemyMonsterCardSlots.Add(attackerCard.GetCardSlot());
-            }
-            else
-            {
-                // 玩家卡牌
-                Vector2 deadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
-                attackerCard.AnimateCardToPosition(deadCardPosition);
-                _playerBattleCards.Remove(attackerCard);
-                CardSlot cardSlot = attackerCard.GetCardSlot();
-                cardSlot.CardInSlot = false;
-            }
-        }
-        attackerCard.AttackedInCurrentTurn = true;
     }
 
     /**
@@ -665,14 +653,11 @@ public partial class BattleManager : Node2D
         _playerMagicBattleCards.Add(cardManagerCardBeingDragged as MagicCard);
     }
     
-    #endregion
-
-
     /**
      * InputManager中，FinishedDragged后，使用魔法卡，调用此方法
      * 后续不同的魔法卡能力，都从这个方法中调用
      */
-    public void UsingMagicCard(MagicCard magicCard)
+    public async void UsingMagicCard<T>(T magicCard) where T : MagicCard
     {
         // TODO
         // 各种魔法卡能力实现
@@ -685,7 +670,20 @@ public partial class BattleManager : Node2D
         if ("龙卷风".Equals(magicCard.CardInfo.Name))
         {
             Utils.Print("龙卷风魔法卡使用！");
-            
+            Tornado tornado = magicCard as Tornado;
+            await tornado.StormAbility(_enemyBattleCards);
         }
+        
+        DestroyCard(magicCard);
     }
+
+    public Timer GetBattleTimer()
+    {
+        return _battleTimer;
+    }
+    
+    #endregion
+
+
+    
 }

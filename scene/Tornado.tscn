@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://cy2dr5wi30lld"]
+
+[ext_resource type="PackedScene" uid="uid://bdremdxvmd1k" path="res://scene/MagicCard.tscn" id="1_topvi"]
+[ext_resource type="Script" uid="uid://cqyps3fl5sild" path="res://script/cardAbility/Tornado.cs" id="2_topvi"]
+
+[node name="Tornado" instance=ExtResource("1_topvi")]
+script = ExtResource("2_topvi")

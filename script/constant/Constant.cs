@@ -13,6 +13,7 @@ public static class Constant
     public const String CARD_SCENE_PATH = "res://scene/Card.tscn";
     public const String MAGIC_CARD_SCENE_PATH = "res://scene/MagicCard.tscn";
     public const String ENEMY_CARD_SCENE_PATH = "res://scene/EnemyCard.tscn";
+    public const String TORNADO_CARD_SCENE_PATH = "res://scene/Tornado.tscn";
 
 
     public const float DEFAULT_CARD_SCALE_SIZE = 0.8f;

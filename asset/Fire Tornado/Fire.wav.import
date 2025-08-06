@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cm0p1g5kos6v"
+path="res://.godot/imported/Fire.wav-c407c55e57b32421c7d3183d2333b07e.sample"
+
+[deps]
+
+source_file="res://asset/Fire Tornado/Fire.wav"
+dest_files=["res://.godot/imported/Fire.wav-c407c55e57b32421c7d3183d2333b07e.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
