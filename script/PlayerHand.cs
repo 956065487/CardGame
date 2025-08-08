@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using CardGame.script;
+using CardGame.script.constant;
 
 public partial class PlayerHand : Node2D
 {
@@ -54,9 +55,7 @@ public partial class PlayerHand : Node2D
         if (_cardWidth == 0)
         {
             // 获取卡牌宽度
-            Sprite2D cardImgSprite2D = card.GetNode<Sprite2D>("CardImg");
-            int currentCardWidth = cardImgSprite2D.Texture.GetWidth();
-            this._cardWidth = currentCardWidth;
+            this._cardWidth = Constant.DEFAULT_CARD_WIDTH;
         }
         
         if (!_playerHandCards.Contains(card))

@@ -15,6 +15,7 @@ public static class Constant
     public const String ENEMY_CARD_SCENE_PATH = "res://scene/EnemyCard.tscn";
     public const String TORNADO_CARD_SCENE_PATH = "res://scene/Tornado.tscn";
 
+    public const int DEFAULT_CARD_WIDTH = 120;  // 默认卡牌宽度100，用于调整手牌中间距
 
     public const float DEFAULT_CARD_SCALE_SIZE = 0.8f;
     // 卡牌高亮大小

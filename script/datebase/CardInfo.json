@@ -25,7 +25,7 @@
       "Name" : "龙卷风",
       "Hp" : null,
       "Attack" : null,
-      "Description" : "所到之处寸草不生",
+      "Description" : "所到之处寸草不生。对所有敌方单位造成2点伤害",
       "CardType" : "Magic"
     }
   }

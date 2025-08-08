@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CardGame.script.constant;
 using Godot;
 
 namespace CardGame.script;
@@ -48,15 +49,13 @@ public partial class EnemyHand : Node2D
         {
             return;
         }
-        
+
         card.SetCheckEnemyCard(true);
 
         if (_cardWidth == 0)
         {
             // 获取卡牌宽度
-            Sprite2D cardImgSprite2D = card.GetNode<Sprite2D>("CardImg");
-            int currentCardWidth = cardImgSprite2D.Texture.GetWidth();
-            this._cardWidth = currentCardWidth;
+            this._cardWidth = Constant.DEFAULT_CARD_WIDTH;
         }
 
 
@@ -100,11 +99,11 @@ public partial class EnemyHand : Node2D
         tween.TweenProperty(card, "position", newPosition, 1);
         await ToSignal(tween, "finished");
     }
-    
+
     /**
      * 动画移动卡牌位置，changeCardDirection为true时，翻转
      */
-    public void AnimateCardToPosition(Card card, Vector2 newPosition,bool changeCardDirection)
+    public void AnimateCardToPosition(Card card, Vector2 newPosition, bool changeCardDirection)
     {
         if (changeCardDirection)
         {
@@ -145,12 +144,37 @@ public partial class EnemyHand : Node2D
     }
 
     /**
-     * 外部调用获取敌人卡牌列表
+     * 外部调用获取敌人怪物卡牌列表
      */
-
-    public List<EnemyCard> GetEnemyCards()
+    public List<EnemyCard> GetEnemyMonsterCards()
     {
-        return _enemyHandCards;
+        List<EnemyCard> enemyMonsterCardsList = new List<EnemyCard>();
+        foreach (EnemyCard enemyCard in _enemyHandCards)
+        {
+            if ("Monster".Equals(enemyCard.CardInfo.CardType))
+            {
+                enemyMonsterCardsList.Add(enemyCard);
+            }
+        }
+
+        return enemyMonsterCardsList;
+    }
+
+    /**
+     * 外部调用获取敌人魔法卡牌列表
+     */
+    public List<EnemyCard> GetEnemyMagicCards()
+    {
+        List<EnemyCard> enemyMagicCardsList = new List<EnemyCard>();
+        foreach (EnemyCard enemyCard in _enemyHandCards)
+        {
+            if ("Magic".Equals(enemyCard.CardInfo.CardType))
+            {
+                enemyMagicCardsList.Add(enemyCard);
+            }
+        }
+
+        return enemyMagicCardsList;
     }
 
     #endregion
