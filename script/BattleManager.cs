@@ -249,28 +249,31 @@ public partial class BattleManager : Node2D
      */
     private async void BattleCardClicked()
     {
-        if (_isAnimate )
+        if (_isAnimate)
         {
             // 动画时，不触发逻辑
             // 如果点击的卡牌已经攻击过了，返回
             return;
         }
+
         // 敌人战场上没怪时，并且点击的是空白处，且已经选择了要攻击的卡牌
         // 进行直接攻击敌方生命值
-        if (_enemyBattleMonsterCards.Count == 0 && _hoveringCard == null && _currentAttackerCard != null && !_endButtonMouseEntered)
+        if (_enemyBattleMonsterCards.Count == 0 && _hoveringCard == null && _currentAttackerCard != null &&
+            !_endButtonMouseEntered)
         {
             if (_currentAttackerCard.CardInfo.CardType.Equals("Magic"))
             {
                 // 防止魔法卡触发直接攻击，导致位移的bug
                 return;
             }
+
             _isAnimate = true;
             await DirectAttack(_currentAttackerCard);
             _currentAttackerCard = null;
             _isAnimate = false;
             return;
         }
-        
+
         if (_hoveringCard != null && !_hoveringCard.AttackedInCurrentTurn)
         {
             if (_hoveringCard == _currentAttackerCard)
@@ -289,13 +292,15 @@ public partial class BattleManager : Node2D
             {
                 // 此时，玩家选择某张牌
                 _isAnimate = true;
-                if (_currentAttackerCard != null && _currentAttackerCard != _hoveringCard && !_currentAttackerCard.AttackedInCurrentTurn)
+                if (_currentAttackerCard != null && _currentAttackerCard != _hoveringCard &&
+                    !_currentAttackerCard.AttackedInCurrentTurn)
                 {
                     // 重置选择的卡牌
                     var oldCardPosition = _currentAttackerCard.GlobalPosition;
                     Vector2 oldCardPos = new Vector2(oldCardPosition.X, oldCardPosition.Y + 30);
                     await _currentAttackerCard.AnimateCardToPosition(oldCardPos, 0.3);
                 }
+
                 // 如果玩家战场中存在当前选中点击的卡牌，卡牌事件
                 // 偏移一部分
                 if (_hoveringCard.AttackedInCurrentTurn)
@@ -304,6 +309,7 @@ public partial class BattleManager : Node2D
                     _isAnimate = false;
                     return;
                 }
+
                 _currentAttackerCard = _hoveringCard;
                 var currentCardPosition = _currentAttackerCard.GlobalPosition;
                 Vector2 newPos = new Vector2(currentCardPosition.X, currentCardPosition.Y - 30);
@@ -319,6 +325,7 @@ public partial class BattleManager : Node2D
                 _isAnimate = false;
             }
         }
+
         ChooseEnemyAndAttack();
     }
 
@@ -343,7 +350,7 @@ public partial class BattleManager : Node2D
 
         _isAnimate = true;
         _currentDefenderCard = _hoveringCard;
-        await Attack(_currentAttackerCard,_currentDefenderCard);
+        await Attack(_currentAttackerCard, _currentDefenderCard);
         _currentAttackerCard.AttackedInCurrentTurn = true;
         _currentAttackerCard = null;
         _isAnimate = false;
@@ -389,7 +396,7 @@ public partial class BattleManager : Node2D
             _deck.GetNode<Area2D>("Area2D").GetNode<CollisionShape2D>("CollisionShape2D");
         deckCollisionShape2D.Disabled = false;
         _deck._thisTurnDrawCard = false;
-        
+
         // 遍历玩家战场，重新启用设置为未攻击过
         for (var i = 0; i < _playerBattleCards.Count; i++)
         {
@@ -453,6 +460,7 @@ public partial class BattleManager : Node2D
             Utils.Print(this, "玩家战场怪物大于等于3，敌人使用魔法卡");
             await EnemyUseMagicCard();
         }
+
         if (_enemyMonsterCards.Count == 0 && _enemyBattleMonsterCards.Count == 0)
         {
             // 手牌为0，且战场卡牌为0
@@ -464,16 +472,13 @@ public partial class BattleManager : Node2D
             Utils.PrintErr(this, "EnemyTurn:未能获取到_enemyCards");
         }
 
-        // TODO
-        // 需要区分魔法卡和怪物卡的逻辑
-        
         // 对手回合的后续逻辑
         // 怪物卡逻辑
         // 将卡牌移动到目标卡槽上
         // 并存储卡牌到List中
         //Utils.Print(this, "enemyUseMonsterCardTask running");
         await EnemyUseMonsterCard();
-        
+
         //Utils.Print(this, "enemyUseMonsterCardTask finished");
 
         // 人机尝试操作
@@ -481,7 +486,10 @@ public partial class BattleManager : Node2D
 
         EndEnemyTurn();
     }
-    
+
+    // TODO
+    // 使用魔法卡概率性卡死，（很可能是使用了相同的魔法卡卡槽，导致的卡死）
+    // 原因猜测：使用后再次扔到了已经使用过的卡槽，使用完没有恢复卡槽（可能性很大）
     private async Task EnemyUseMagicCard()
     {
         int randomCardSlot = GD.RandRange(0, _enemyMagicCardSlots.Count - 1);
@@ -493,24 +501,26 @@ public partial class BattleManager : Node2D
             CardSlot usingCardSlot = _enemyMagicCardSlots[randomCardSlot];
             await _enemyHand.AnimateCardToPosition(usingMagicCard, usingCardSlot.GlobalPosition, true);
             usingMagicCard.SetCardSlot(usingCardSlot);
-     
+
             if ("龙卷风".Equals(usingMagicCard.CardInfo.Name))
             {
                 Utils.Print("龙卷风魔法卡使用！");
-                
+
                 Utils.Print("-------------------玩家战场卡牌信息如下-------------");
                 foreach (Card playerBattleCard in _playerBattleCards)
                 {
                     Utils.Print($"{playerBattleCard}");
                 }
+
                 Utils.Print("-------------------玩家战场卡牌信息如下-------------");
                 await usingMagicCard.StormAbility(_playerBattleCards);
             }
+
             _enemyHand.RemoveCardFromHand(usingMagicCard);
             _enemyHand.UpdateHandPositions();
             _enemyMagicCards.Remove(usingMagicCard);
             await DestroyCard(usingMagicCard);
-            
+
             WaitTimerBySecond(5);
         }
     }
@@ -527,7 +537,7 @@ public partial class BattleManager : Node2D
         Utils.PrintErr(this,$"_enemyMonsterCards.Count = {_enemyMonsterCards.Count}");
         Utils.PrintErr(this,$"_enemyBattleMonsterCards.Count = {_enemyBattleMonsterCards.Count}");
         */
-        
+
         if (_enemyMonsterCards.Count != 0)
         {
             EnemyCard usingCard = _enemyMonsterCards[randomCard];
@@ -542,7 +552,6 @@ public partial class BattleManager : Node2D
                 _enemyMonsterCardSlots.Remove(usingCardSlot);
                 _enemyHand.UpdateHandPositions();
                 // 添加一个等待完成Animatecard的信号
-                
             }
         }
 
@@ -550,7 +559,6 @@ public partial class BattleManager : Node2D
         {
             await EnemyUseMonsterCard();
         }
-        
     }
 
     /**
@@ -559,7 +567,7 @@ public partial class BattleManager : Node2D
     private async Task TryPlayCardWithRandomAttack()
     {
         List<EnemyCard> enemyBattleCardsCopy = _enemyBattleMonsterCards.ToList();
-        foreach (var enemyCard in enemyBattleCardsCopy.Distinct())  // 用于删除重复值，避免重复调用
+        foreach (var enemyCard in enemyBattleCardsCopy.Distinct()) // 用于删除重复值，避免重复调用
         {
             if (_playerBattleCards.Count == 0)
             {
@@ -586,6 +594,7 @@ public partial class BattleManager : Node2D
         {
             return;
         }
+
         Utils.Print(this, "Attack");
         var tween = GetTree().CreateTween();
         var OldPosition = attackerCard.GlobalPosition;
@@ -594,12 +603,13 @@ public partial class BattleManager : Node2D
 
         if (!(attackerCard is EnemyCard))
         {
-            OldPosition = new Vector2(OldPosition.X, OldPosition.Y +30);
+            OldPosition = new Vector2(OldPosition.X, OldPosition.Y + 30);
         }
-            // 敌人卡牌攻击，位置默认*/
+
+        // 敌人卡牌攻击，位置默认*/
         tween.TweenProperty(attackerCard, "position", attackingCard.GlobalPosition, 0.8);
         tween.TweenProperty(attackerCard, "position", OldPosition, 2);
-        
+
         await ToSignal(tween, "finished");
         attackingCard.ZIndex = 2;
         attackerCard.ZIndex = 2;
@@ -616,36 +626,44 @@ public partial class BattleManager : Node2D
         {
             DestroyCard(attackingCard);
         }
-        
+
         if (attackerCard.CardInfo.Hp <= 0)
         {
             DestroyCard(attackerCard);
         }
-        
+
         attackerCard.AttackedInCurrentTurn = true;
     }
 
     public async Task DestroyCard(Card destroyCard)
     {
-            // 被攻击方代码逻辑
-            if (destroyCard is EnemyCard)
-            {
-                // 如果是敌人卡牌
-                Vector2 deadCardPosition =
-                    new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
-                await destroyCard.AnimateCardToPosition(deadCardPosition);
-                _enemyBattleMonsterCards.Remove(destroyCard as EnemyCard);
-                _enemyMonsterCardSlots.Add(destroyCard.GetCardSlot());
-            }
-            else
-            {
-                // 玩家卡牌     墓地deck Y - 300
-                Vector2 deadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
-                await destroyCard.AnimateCardToPosition(deadCardPosition);
-                _playerBattleCards.Remove(destroyCard);
-                CardSlot cardSlot = destroyCard.GetCardSlot();
-                cardSlot.CardInSlot = false;
-            }
+        // 防御性检查：卡牌为空或已销毁
+        if (destroyCard == null || !IsInstanceValid(destroyCard))
+            return;
+
+        // 防御性检查：卡牌是否已经不在场景树
+        if (!destroyCard.IsInsideTree())
+            return;
+
+        // 被攻击方代码逻辑
+        if (destroyCard is EnemyCard)
+        {
+            // 如果是敌人卡牌
+            Vector2 deadCardPosition =
+                new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
+            await destroyCard.AnimateCardToPosition(deadCardPosition);
+            _enemyBattleMonsterCards.Remove(destroyCard as EnemyCard);
+            _enemyMonsterCardSlots.Add(destroyCard.GetCardSlot());
+        }
+        else
+        {
+            // 玩家卡牌     墓地deck Y - 300
+            Vector2 deadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
+            await destroyCard.AnimateCardToPosition(deadCardPosition);
+            _playerBattleCards.Remove(destroyCard);
+            CardSlot cardSlot = destroyCard.GetCardSlot();
+            cardSlot.CardInSlot = false;
+        }
     }
 
     /**
@@ -658,10 +676,12 @@ public partial class BattleManager : Node2D
         {
             return;
         }
+
         if (attackerCard.CardInfo.Hp <= 0)
         {
             return;
         }
+
         // 每个分支需要播放攻击动画
         if (attackerCard is EnemyCard)
         {
@@ -677,7 +697,7 @@ public partial class BattleManager : Node2D
         else
         {
             var tween1 = GetTree().CreateTween();
-            var oldPosition = new Vector2(attackerCard.GlobalPosition.X,attackerCard.GlobalPosition.Y + 30);
+            var oldPosition = new Vector2(attackerCard.GlobalPosition.X, attackerCard.GlobalPosition.Y + 30);
             tween1.TweenProperty(attackerCard, "position", _enemyHpLabel.GlobalPosition, 0.8);
             await ToSignal(tween1, "finished");
             var tween2 = GetTree().CreateTween();
@@ -685,6 +705,7 @@ public partial class BattleManager : Node2D
             await ToSignal(tween2, "finished");
             enemyHp = enemyHp - attackerCard.CardInfo.Attack;
         }
+
         attackerCard.AttackedInCurrentTurn = true;
         UpdateHp();
     }
@@ -717,9 +738,10 @@ public partial class BattleManager : Node2D
             Utils.PrintErr("警告：不是魔法卡牌，加入魔法卡牌列表失败！");
             return;
         }
+
         _playerMagicBattleCards.Add(cardManagerCardBeingDragged as MagicCard);
     }
-    
+
     /**
      * InputManager中，FinishedDragged后，使用魔法卡，调用此方法
      * 后续不同的魔法卡能力，都从这个方法中调用
@@ -733,24 +755,21 @@ public partial class BattleManager : Node2D
             Utils.PrintErr("错误，magicCard为null");
             return;
         }
-        
+
         if ("龙卷风".Equals(magicCard.CardInfo.Name))
         {
             Utils.Print("龙卷风魔法卡使用！");
             Tornado tornado = magicCard as Tornado;
             await tornado.StormAbility(_enemyBattleMonsterCards);
         }
-        
-        DestroyCard(magicCard);
+
+        await DestroyCard(magicCard);
     }
 
     public Timer GetBattleTimer()
     {
         return _battleTimer;
     }
-    
+
     #endregion
-
-
-    
 }
