@@ -413,7 +413,7 @@ public partial class BattleManager : Node2D
         // 给敌人发牌
         if (_opponentDeck != null)
         {
-            _opponentDeck.DrawEnemyCard();
+            await _opponentDeck.DrawEnemyCard();
         }
         else
         {
@@ -421,7 +421,6 @@ public partial class BattleManager : Node2D
         }
 
         WaitTimerBySecond(3);
-        Utils.Print(this, "等待3秒开始");
         await ToSignal(_battleTimer, "timeout");
         EnemyTurn();
     }
@@ -451,7 +450,8 @@ public partial class BattleManager : Node2D
         _enemyMagicCards = _enemyHand.GetEnemyMagicCards();
         if (_enemyMagicCards != null && _playerBattleCards.Count >= 3)
         {
-            EnemyUseMagicCard();
+            Utils.Print(this, "玩家战场怪物大于等于3，敌人使用魔法卡");
+            await EnemyUseMagicCard();
         }
         if (_enemyMonsterCards.Count == 0 && _enemyBattleMonsterCards.Count == 0)
         {
@@ -471,37 +471,46 @@ public partial class BattleManager : Node2D
         // 怪物卡逻辑
         // 将卡牌移动到目标卡槽上
         // 并存储卡牌到List中
-        Utils.Print(this, "enemyUseMonsterCardTask running");
+        //Utils.Print(this, "enemyUseMonsterCardTask running");
         await EnemyUseMonsterCard();
         
-        Utils.Print(this, "enemyUseMonsterCardTask finished");
+        //Utils.Print(this, "enemyUseMonsterCardTask finished");
 
         // 人机尝试操作
         await TryPlayCardWithRandomAttack();
 
         EndEnemyTurn();
     }
-
-    private void EnemyUseMagicCard()
+    
+    private async Task EnemyUseMagicCard()
     {
         int randomCardSlot = GD.RandRange(0, _enemyMagicCardSlots.Count - 1);
         int randomCard = GD.RandRange(0, _enemyMagicCards.Count - 1);
-        if (_enemyMonsterCards.Count > 0)
+        if (_enemyMagicCards.Count > 0)
         {
             EnemyCard usingMagicCard = _enemyMagicCards[randomCard];
 
             CardSlot usingCardSlot = _enemyMagicCardSlots[randomCardSlot];
-            _enemyHand.AnimateCardToPosition(usingMagicCard, usingCardSlot.GlobalPosition, true);
+            await _enemyHand.AnimateCardToPosition(usingMagicCard, usingCardSlot.GlobalPosition, true);
             usingMagicCard.SetCardSlot(usingCardSlot);
      
             if ("龙卷风".Equals(usingMagicCard.CardInfo.Name))
             {
                 Utils.Print("龙卷风魔法卡使用！");
                 
-                usingMagicCard.StormAbility(_playerBattleCards);
+                Utils.Print("-------------------玩家战场卡牌信息如下-------------");
+                foreach (Card playerBattleCard in _playerBattleCards)
+                {
+                    Utils.Print($"{playerBattleCard}");
+                }
+                Utils.Print("-------------------玩家战场卡牌信息如下-------------");
+                await usingMagicCard.StormAbility(_playerBattleCards);
             }
             _enemyHand.RemoveCardFromHand(usingMagicCard);
             _enemyHand.UpdateHandPositions();
+            _enemyMagicCards.Remove(usingMagicCard);
+            await DestroyCard(usingMagicCard);
+            
             WaitTimerBySecond(5);
         }
     }
@@ -513,9 +522,11 @@ public partial class BattleManager : Node2D
     {
         int randomCardSlot = GD.RandRange(0, _enemyMonsterCardSlots.Count - 1);
         int randomCard = GD.RandRange(0, _enemyMonsterCards.Count - 1);
+        /*
         Utils.Print(this, "------------------------EnemyUseMonsterCard running -----------------");
         Utils.PrintErr(this,$"_enemyMonsterCards.Count = {_enemyMonsterCards.Count}");
         Utils.PrintErr(this,$"_enemyBattleMonsterCards.Count = {_enemyBattleMonsterCards.Count}");
+        */
         
         if (_enemyMonsterCards.Count != 0)
         {
@@ -614,7 +625,7 @@ public partial class BattleManager : Node2D
         attackerCard.AttackedInCurrentTurn = true;
     }
 
-    public void DestroyCard(Card destroyCard)
+    public async Task DestroyCard(Card destroyCard)
     {
             // 被攻击方代码逻辑
             if (destroyCard is EnemyCard)
@@ -622,7 +633,7 @@ public partial class BattleManager : Node2D
                 // 如果是敌人卡牌
                 Vector2 deadCardPosition =
                     new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
-                destroyCard.AnimateCardToPosition(deadCardPosition);
+                await destroyCard.AnimateCardToPosition(deadCardPosition);
                 _enemyBattleMonsterCards.Remove(destroyCard as EnemyCard);
                 _enemyMonsterCardSlots.Add(destroyCard.GetCardSlot());
             }
@@ -630,7 +641,7 @@ public partial class BattleManager : Node2D
             {
                 // 玩家卡牌     墓地deck Y - 300
                 Vector2 deadCardPosition = new Vector2(_deck.GlobalPosition.X, _deck.GlobalPosition.Y - 300);
-                destroyCard.AnimateCardToPosition(deadCardPosition);
+                await destroyCard.AnimateCardToPosition(deadCardPosition);
                 _playerBattleCards.Remove(destroyCard);
                 CardSlot cardSlot = destroyCard.GetCardSlot();
                 cardSlot.CardInSlot = false;
@@ -687,7 +698,7 @@ public partial class BattleManager : Node2D
         _endButton.Disabled = false;
         _endButton.Visible = true;
         EnablePlayer(); // 启用玩家操作
-        GD.Print("EndEnemyTurn一次");
+        // GD.Print("EndEnemyTurn一次");
         _deck.DrawCard();
     }
 

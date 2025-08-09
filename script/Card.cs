@@ -44,7 +44,7 @@ public partial class Card : Node2D
     public override void _Ready()
     {
         GetNodes();
-        CheckEnemyCard = false;
+        // CheckEnemyCard = false;
         // 设置卡牌出现的初始位置
         Node main = GetNodeOrNull("/root/Main");
         if (main == null)

@@ -85,7 +85,7 @@ public partial class EnemyHand : Node2D
                 continue;
             }
 
-            card.PositionInHand = newPosition;
+            card.PositionInHand = newPosition; 
             AnimateCardToPosition(card, newPosition);
         }
     }
@@ -108,8 +108,9 @@ public partial class EnemyHand : Node2D
         if (changeCardDirection)
         {
             // 播放动画并更新位置
-            await AnimateCardToPosition(card, newPosition);
             card.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
+            await AnimateCardToPosition(card, newPosition);
+            
             card.ZIndex = 2;
         }
         else

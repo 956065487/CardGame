@@ -10,13 +10,13 @@
     "Archer" : {
       "Name" : "弓箭手",
       "Hp" : 3,
-      "Attack" : 6,
+      "Attack" : 5,
       "Description" : "一名敏捷的弓箭手",
       "CardType" : "Monster"
     },
     "Demon" : {
       "Name" : "恶魔",
-      "Hp" : 9,
+      "Hp" : 8,
       "Attack" : 4,
       "Description" : "一名强大的恶魔",
       "CardType" : "Monster"

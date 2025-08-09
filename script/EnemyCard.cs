@@ -100,7 +100,7 @@ public partial class EnemyCard : Card
     
     private async Task BaseStormAbility<T>(List<T> cards) where T : Card
     {
-        if (!"龙卷风".Equals(CardInfo.CardType))
+        if (!"龙卷风".Equals(CardInfo.Name))
         {
             return;
         }
@@ -127,10 +127,6 @@ public partial class EnemyCard : Card
             SetGlobalPosition(new Vector2(514,387));
             await AnimateCardToPosition(new Vector2(1255, 387),1.2);
         }
-        
-        
-        _battleManager.WaitTimerBySecond(1);
-        await ToSignal(_battleManager.GetBattleTimer(), "timeout");
     }
     
     public async Task StormAbility(List<EnemyCard> monsterCards)

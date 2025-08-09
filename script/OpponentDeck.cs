@@ -124,6 +124,7 @@ public partial class OpponentDeck : Deck
         CardInfo cardInfo = CardDataLoader.GetCardInfo(cardDraw);
         newCard.CardInfo = cardInfo;
         newCard.UpdateCardInfo();
+        newCard.SetCheckEnemyCard(true);
         // Utils.Print(this,$"创建时，卡牌的信息是{newCard.CardInfo}");
 
         if ("Magic".Equals(newCard.CardInfo.CardType))
