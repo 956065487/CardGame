@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CardGame.script;
 using CardGame.script.constant;
 using CardGame.script.pojo;
@@ -37,7 +38,8 @@ public partial class OpponentDeck : Deck
         
         for (int i = 0; i < _startCardsNum; i++)
         {
-            DrawEnemyCard();
+            Task drawEnemyCardTask = DrawEnemyCard();
+            drawEnemyCardTask.GetAwaiter();
         }
         
         
@@ -93,13 +95,13 @@ public partial class OpponentDeck : Deck
 
 
 
-    public void DrawEnemyCard()
+    public Task DrawEnemyCard()
     {
         // 当牌堆没牌时
         if (_enemyDeckList.Count == 0)
         {
             // 此时是最后一张被发出去，重置隐藏等
-            return;
+            return Task.CompletedTask;
         }
         else if (_enemyDeckList.Count == 1)
         {
@@ -130,6 +132,7 @@ public partial class OpponentDeck : Deck
             newCard.GetNode<RichTextLabel>("Health").Visible = false;
         }
         _enemyHand.AddToHand(newCard);
+        return Task.CompletedTask;
         // 播放翻转动画，敌方卡牌不翻转
         // newCard.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
     }

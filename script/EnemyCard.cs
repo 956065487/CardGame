@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using CardGame.script.cardAbility;
 using Godot;
 using CardGame.script.constant;
 using CardGame.script.pojo;
@@ -16,9 +19,8 @@ public partial class EnemyCard : Card
     private RichTextLabel _healthLabel;
     private OpponentDeck _opponentDeck;
     private Area2D _area2D;
-    
+    private BattleManager _battleManager;
 
-    
     #endregion
 
     #region 生命周期中的方法
@@ -94,6 +96,51 @@ public partial class EnemyCard : Card
     public override string ToString()
     {
         return CardInfo.ToString();
+    }
+    
+    private async Task BaseStormAbility<T>(List<T> cards) where T : Card
+    {
+        if (!"龙卷风".Equals(CardInfo.CardType))
+        {
+            return;
+        }
+        _battleManager = GetNodeOrNull<BattleManager>("/root/Main/BattleManager");
+        for (var i = 0; i < cards.Count; i++)
+        {
+            cards[i].CardInfo.Hp = Mathf.Max(cards[i].CardInfo.Hp - Tornado.MAGIC_DAMAGE, 0);
+            cards[i].UpdateCardInfoToLabel();
+            if (cards[i].CardInfo.Hp <= 0)
+            {
+                _battleManager.DestroyCard(cards[i]);
+                i = i - 1;
+            }
+        }
+
+        bool checkEnemyCard = CheckEnemyCard;
+        if (checkEnemyCard)
+        {
+            SetGlobalPosition(new Vector2(514,617));
+            await AnimateCardToPosition(new Vector2(1255, 617),1.2);
+        }
+        else
+        {
+            SetGlobalPosition(new Vector2(514,387));
+            await AnimateCardToPosition(new Vector2(1255, 387),1.2);
+        }
+        
+        
+        _battleManager.WaitTimerBySecond(1);
+        await ToSignal(_battleManager.GetBattleTimer(), "timeout");
+    }
+    
+    public async Task StormAbility(List<EnemyCard> monsterCards)
+    {
+        await BaseStormAbility(monsterCards);
+    }
+    
+    public async Task StormAbility(List<Card> monsterCards)
+    {
+        await BaseStormAbility(monsterCards);
     }
 
     #endregion

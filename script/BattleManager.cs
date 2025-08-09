@@ -433,8 +433,8 @@ public partial class BattleManager : Node2D
     {
         _battleTimer.OneShot = true; // 标记为一次性
         _battleTimer.WaitTime = second;
-        Utils.Print(this, "启用TEST模式，计时器为1秒！");
-        _battleTimer.WaitTime = 1;
+        //Utils.Print(this, "启用TEST模式，计时器为1秒！");
+        //_battleTimer.WaitTime = 1;
         _battleTimer.Start();
     }
 
@@ -449,9 +449,9 @@ public partial class BattleManager : Node2D
         Utils.Print(this, "3秒后 敌人行动");
         _enemyMonsterCards = _enemyHand.GetEnemyMonsterCards();
         _enemyMagicCards = _enemyHand.GetEnemyMagicCards();
-        if (_enemyMagicCards != null)
+        if (_enemyMagicCards != null && _playerBattleCards.Count >= 3)
         {
-            Utils.PrintErr(this, "敌人魔法卡使用逻辑并未实现");
+            EnemyUseMagicCard();
         }
         if (_enemyMonsterCards.Count == 0 && _enemyBattleMonsterCards.Count == 0)
         {
@@ -471,31 +471,75 @@ public partial class BattleManager : Node2D
         // 怪物卡逻辑
         // 将卡牌移动到目标卡槽上
         // 并存储卡牌到List中
+        Utils.Print(this, "enemyUseMonsterCardTask running");
+        await EnemyUseMonsterCard();
+        
+        Utils.Print(this, "enemyUseMonsterCardTask finished");
+
+        // 人机尝试操作
+        await TryPlayCardWithRandomAttack();
+
+        EndEnemyTurn();
+    }
+
+    private void EnemyUseMagicCard()
+    {
+        int randomCardSlot = GD.RandRange(0, _enemyMagicCardSlots.Count - 1);
+        int randomCard = GD.RandRange(0, _enemyMagicCards.Count - 1);
+        if (_enemyMonsterCards.Count > 0)
+        {
+            EnemyCard usingMagicCard = _enemyMagicCards[randomCard];
+
+            CardSlot usingCardSlot = _enemyMagicCardSlots[randomCardSlot];
+            _enemyHand.AnimateCardToPosition(usingMagicCard, usingCardSlot.GlobalPosition, true);
+            usingMagicCard.SetCardSlot(usingCardSlot);
+     
+            if ("龙卷风".Equals(usingMagicCard.CardInfo.Name))
+            {
+                Utils.Print("龙卷风魔法卡使用！");
+                
+                usingMagicCard.StormAbility(_playerBattleCards);
+            }
+            _enemyHand.RemoveCardFromHand(usingMagicCard);
+            _enemyHand.UpdateHandPositions();
+            WaitTimerBySecond(5);
+        }
+    }
+
+    /**
+     * 敌人回合使用卡牌到卡槽上
+     */
+    private async Task EnemyUseMonsterCard()
+    {
         int randomCardSlot = GD.RandRange(0, _enemyMonsterCardSlots.Count - 1);
         int randomCard = GD.RandRange(0, _enemyMonsterCards.Count - 1);
+        Utils.Print(this, "------------------------EnemyUseMonsterCard running -----------------");
+        Utils.PrintErr(this,$"_enemyMonsterCards.Count = {_enemyMonsterCards.Count}");
+        Utils.PrintErr(this,$"_enemyBattleMonsterCards.Count = {_enemyBattleMonsterCards.Count}");
+        
         if (_enemyMonsterCards.Count != 0)
         {
             EnemyCard usingCard = _enemyMonsterCards[randomCard];
             if (_enemyMonsterCardSlots.Count != 0)
             {
                 CardSlot usingCardSlot = _enemyMonsterCardSlots[randomCardSlot];
-                _enemyHand.AnimateCardToPosition(usingCard, usingCardSlot.GlobalPosition, true);
+                await _enemyHand.AnimateCardToPosition(usingCard, usingCardSlot.GlobalPosition, true);
                 usingCard.SetCardSlot(usingCardSlot);
                 _enemyBattleMonsterCards.Add(usingCard);
                 _enemyHand.RemoveCardFromHand(usingCard);
+                _enemyMonsterCards.Remove(usingCard);
                 _enemyMonsterCardSlots.Remove(usingCardSlot);
                 _enemyHand.UpdateHandPositions();
+                // 添加一个等待完成Animatecard的信号
+                
             }
         }
 
-
-        WaitTimerBySecond(5);
-        await ToSignal(_battleTimer, "timeout");
-
-        // 人机尝试操作
-        await TryPlayCardWithRandomAttack();
-
-        EndEnemyTurn();
+        if (_enemyBattleMonsterCards.Count <= 2 && _enemyMonsterCards.Count > 0)
+        {
+            await EnemyUseMonsterCard();
+        }
+        
     }
 
     /**
@@ -504,7 +548,7 @@ public partial class BattleManager : Node2D
     private async Task TryPlayCardWithRandomAttack()
     {
         List<EnemyCard> enemyBattleCardsCopy = _enemyBattleMonsterCards.ToList();
-        foreach (var enemyCard in enemyBattleCardsCopy)
+        foreach (var enemyCard in enemyBattleCardsCopy.Distinct())  // 用于删除重复值，避免重复调用
         {
             if (_playerBattleCards.Count == 0)
             {
@@ -616,6 +660,7 @@ public partial class BattleManager : Node2D
             await ToSignal(tween1, "finished");
             var tween2 = GetTree().CreateTween();
             tween2.TweenProperty(attackerCard, "position", oldPosition, 0.8);
+            await ToSignal(tween2, "finished");
             playerHp = playerHp - attackerCard.CardInfo.Attack;
         }
         else
@@ -626,6 +671,7 @@ public partial class BattleManager : Node2D
             await ToSignal(tween1, "finished");
             var tween2 = GetTree().CreateTween();
             tween2.TweenProperty(attackerCard, "position", oldPosition, 0.8);
+            await ToSignal(tween2, "finished");
             enemyHp = enemyHp - attackerCard.CardInfo.Attack;
         }
         attackerCard.AttackedInCurrentTurn = true;

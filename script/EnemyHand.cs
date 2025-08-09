@@ -103,19 +103,19 @@ public partial class EnemyHand : Node2D
     /**
      * 动画移动卡牌位置，changeCardDirection为true时，翻转
      */
-    public void AnimateCardToPosition(Card card, Vector2 newPosition, bool changeCardDirection)
+    public async Task AnimateCardToPosition(Card card, Vector2 newPosition, bool changeCardDirection)
     {
         if (changeCardDirection)
         {
             // 播放动画并更新位置
-            AnimateCardToPosition(card, newPosition);
+            await AnimateCardToPosition(card, newPosition);
             card.GetNode<AnimationPlayer>("AnimationPlayer").Play("CardSlip");
             card.ZIndex = 2;
         }
         else
         {
             // 更新位置
-            AnimateCardToPosition(card, newPosition);
+            await AnimateCardToPosition(card, newPosition);
         }
     }
 
