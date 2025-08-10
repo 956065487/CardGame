@@ -104,18 +104,7 @@ public partial class EnemyCard : Card
         {
             return;
         }
-        _battleManager = GetNodeOrNull<BattleManager>("/root/Main/BattleManager");
-        for (var i = 0; i < cards.Count; i++)
-        {
-            cards[i].CardInfo.Hp = Mathf.Max(cards[i].CardInfo.Hp - Tornado.MAGIC_DAMAGE, 0);
-            cards[i].UpdateCardInfoToLabel();
-            if (cards[i].CardInfo.Hp <= 0)
-            {
-                _battleManager.DestroyCard(cards[i]);
-                i = i - 1;
-            }
-        }
-
+        
         bool checkEnemyCard = CheckEnemyCard;
         if (checkEnemyCard)
         {
@@ -127,6 +116,20 @@ public partial class EnemyCard : Card
             SetGlobalPosition(new Vector2(514,387));
             await AnimateCardToPosition(new Vector2(1255, 387),1.2);
         }
+        
+        _battleManager = GetNodeOrNull<BattleManager>("/root/Main/BattleManager");
+        for (var i = 0; i < cards.Count; i++)
+        {
+            cards[i].CardInfo.Hp = Mathf.Max(cards[i].CardInfo.Hp - Tornado.MAGIC_DAMAGE, 0);
+            cards[i].UpdateCardInfoToLabel();
+            if (cards[i].CardInfo.Hp <= 0)
+            {
+                await _battleManager.DestroyCard(cards[i]);
+                i = i - 1;
+            }
+        }
+
+
     }
     
     public async Task StormAbility(List<EnemyCard> monsterCards)

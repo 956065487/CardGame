@@ -26,5 +26,6 @@ public static class Constant
     // 生命值设置
     public const int STARTING_HP = 30;
 
-    public static readonly List<string> CARD_NAME_LIST = ["Knight", "Archer", "Demon","Tornado"];
+    public static readonly List<string> CARD_NAME_LIST = ["Knight", "Archer", "Demon"];
+    public static readonly List<string> MAGIC_CARD_NAME_LIST = ["Tornado"];
 }

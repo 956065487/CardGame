@@ -30,7 +30,7 @@ public partial class OpponentDeck : Deck
         _startCardsNum = 4;
         
         // 生成卡组
-        bool success = Utils.RandomCardInList(_enemyDeckList,8,10);
+        bool success = Utils.RandomCardInList(_enemyDeckList,12,15);
         if (!success)
         {
             Utils.PrintErr(this,"生成卡组失败，请检查输入值是否正确！");

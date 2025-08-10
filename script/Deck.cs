@@ -33,7 +33,7 @@ public partial class Deck : Node2D
 		_numLabel.Text = _playerDeck.Count.ToString();
 		_playerHand = GetNodeOrNull<PlayerHand>("/root/Main/PlayerHand");
 
-		bool success = Utils.RandomCardInList(_playerDeck,8,10);
+		bool success = Utils.RandomCardInList(_playerDeck,12,15);
 		if (!success)
 		{
 			Utils.PrintErr(this,"生成卡组失败，请检查输入值是否正确！");

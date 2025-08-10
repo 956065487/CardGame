@@ -64,10 +64,20 @@ public static class Utils
         {
             return false;
         }
-
+        
         int randomInt = GD.RandRange(begin, end);
+        int randomMagicCard = randomInt / 3;
         for (int i = 0; i < randomInt; i++)
         {
+            int randomAddMagicCard = GD.RandRange(0, 1);
+            if (randomAddMagicCard == 0 && randomMagicCard > 0)
+            {
+                // 随机到0，添加魔法卡
+                int randomMagicCardNames = GD.RandRange(0,Constant.MAGIC_CARD_NAME_LIST.Count -1);
+                cardList.Add(Constant.MAGIC_CARD_NAME_LIST[randomMagicCardNames]);
+                randomMagicCard = randomMagicCard - 1;
+                continue;
+            }
             int randomCardNames = GD.RandRange(0,Constant.CARD_NAME_LIST.Count -1);
             cardList.Add(Constant.CARD_NAME_LIST[randomCardNames]);
         }
