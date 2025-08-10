@@ -252,6 +252,7 @@ public partial class InputManager : Node2D
             {
                 _battleManager.AddTOPlayerBattleMagicCards(CardManager.CardBeingDragged);
                 _battleManager.UsingMagicCard((MagicCard)CardManager.CardBeingDragged);
+                
             }
             // 无论吸附成功与否，都要重新启用卡牌的碰撞体
             CollisionShape2D cardCollisionShape = CardManager.CardBeingDragged

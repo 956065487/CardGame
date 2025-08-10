@@ -221,10 +221,8 @@ public partial class Card : Node2D
      * 平移动画更新卡牌位置
      */
     public async Task AnimateCardToPosition(Vector2 newPosition)
-    { 
-        var tween = GetTree().CreateTween();
-        tween.TweenProperty(this, "position", newPosition,1);
-        await ToSignal(tween, "finished");
+    {
+        await AnimateCardToPosition(newPosition, 1);
     }
     
     /**

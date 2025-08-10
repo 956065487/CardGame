@@ -53,17 +53,6 @@ public partial class Tornado : MagicCard
      */
     private async Task BaseStormAbility<T>(List<T> cards) where T : Card
     {
-        for (var i = 0; i < cards.Count; i++)
-        {
-            cards[i].CardInfo.Hp = Mathf.Max(cards[i].CardInfo.Hp - MAGIC_DAMAGE, 0);
-            cards[i].UpdateCardInfoToLabel();
-            if (cards[i].CardInfo.Hp <= 0)
-            {
-                _battleManager.DestroyCard(cards[i]);
-                i = i - 1;
-            }
-        }
-
         bool checkEnemyCard = CheckEnemyCard;
         if (checkEnemyCard)
         {
@@ -76,6 +65,16 @@ public partial class Tornado : MagicCard
             await AnimateCardToPosition(new Vector2(1255, 387),1.2);
         }
         
+        for (var i = 0; i < cards.Count; i++)
+        {
+            cards[i].CardInfo.Hp = Mathf.Max(cards[i].CardInfo.Hp - MAGIC_DAMAGE, 0);
+            cards[i].UpdateCardInfoToLabel();
+            if (cards[i].CardInfo.Hp <= 0)
+            {
+                await _battleManager.DestroyCard(cards[i]);
+                i = i - 1;
+            }
+        }
         
         _battleManager.WaitTimerBySecond(1);
         await ToSignal(_battleManager.GetBattleTimer(), "timeout");

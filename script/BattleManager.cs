@@ -516,6 +516,8 @@ public partial class BattleManager : Node2D
                 await usingMagicCard.StormAbility(_playerBattleCards);
             }
 
+            _enemyMagicCardSlots.Remove(usingCardSlot);
+            
             _enemyHand.RemoveCardFromHand(usingMagicCard);
             _enemyHand.UpdateHandPositions();
             _enemyMagicCards.Remove(usingMagicCard);
@@ -638,13 +640,11 @@ public partial class BattleManager : Node2D
     public async Task DestroyCard(Card destroyCard)
     {
         // 防御性检查：卡牌为空或已销毁
-        if (destroyCard == null || !IsInstanceValid(destroyCard))
+        if (destroyCard == null || !IsInstanceValid(destroyCard) ||　!destroyCard.IsInsideTree())
+        {
             return;
-
-        // 防御性检查：卡牌是否已经不在场景树
-        if (!destroyCard.IsInsideTree())
-            return;
-
+        }
+        
         // 被攻击方代码逻辑
         if (destroyCard is EnemyCard)
         {
@@ -653,7 +653,22 @@ public partial class BattleManager : Node2D
                 new Vector2(_opponentDeck.GlobalPosition.X, _opponentDeck.GlobalPosition.Y + 300);
             await destroyCard.AnimateCardToPosition(deadCardPosition);
             _enemyBattleMonsterCards.Remove(destroyCard as EnemyCard);
-            _enemyMonsterCardSlots.Add(destroyCard.GetCardSlot());
+            if (destroyCard.CardInfo.CardType.Equals("Magic"))
+            {
+                _enemyMagicCardSlots.Add(destroyCard.GetCardSlot());
+            }
+            else
+            {
+                _enemyMonsterCardSlots.Add(destroyCard.GetCardSlot());
+            }
+            
+            CardSlot cardSlot = destroyCard.GetCardSlot();
+            if (cardSlot == null)
+            {
+                Utils.PrintErr(this,"Destroy Card enemy cardslot为空");
+                return;
+            }
+            cardSlot.CardInSlot = false;
         }
         else
         {
@@ -662,6 +677,11 @@ public partial class BattleManager : Node2D
             await destroyCard.AnimateCardToPosition(deadCardPosition);
             _playerBattleCards.Remove(destroyCard);
             CardSlot cardSlot = destroyCard.GetCardSlot();
+            if (cardSlot == null)
+            {
+                Utils.PrintErr(this,"Destroy Card cardslot为空");
+                return;
+            }
             cardSlot.CardInSlot = false;
         }
     }
@@ -763,7 +783,10 @@ public partial class BattleManager : Node2D
             await tornado.StormAbility(_enemyBattleMonsterCards);
         }
 
+        // 魔法卡使用成功，移除卡槽占用
+        CardSlot cardSlot = magicCard.GetCardSlot();
         await DestroyCard(magicCard);
+        cardSlot.CardInSlot = false;
     }
 
     public Timer GetBattleTimer()
